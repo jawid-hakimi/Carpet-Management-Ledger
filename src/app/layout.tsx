@@ -1,11 +1,17 @@
+// app/layout.tsx
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Vazirmatn } from "next/font/google";
 import "./globals.css";
 import { SyncProvider } from "@/offline/SyncProvider";
-import Header from "@/components/layout/header/Header";
+import Header from "@/components/layout/topbar/TopBar";
+import DynamicColors from "@/components/dynamic-colors.tsx/DynamicColors";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+const vazirmatn = Vazirmatn({
+  subsets: ["arabic"],
+  weight: ["400", "500", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Management Ledger",
@@ -14,16 +20,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="fa" dir="rtl" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${vazirmatn.variable} font-sans antialiased`}>
+        <DynamicColors />
         <Header />
         <SyncProvider />
-        {children}
+        <div className="my-20  w-[90%] mx-auto">
+          {children}
+        </div>
       </body>
     </html>
-
   );
 }
