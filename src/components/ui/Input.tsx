@@ -22,7 +22,7 @@ export const Input = ({ label, error, icon, className, ...props }: InputProps) =
         <input
           {...props}
           className={cn(
-            "w-full rounded-md ring ring-custom px-3 py-2 text-sm focus:ring-2 focus:ring-custom outline-none transition-all",
+            "w-full rounded-md ring ring-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 outline-none transition-all",
             icon && "pl-10",
             error && "border-error focus:ring-error/30", // تغییر رنگ هنگام خطا
             className

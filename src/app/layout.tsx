@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className={`${vazirmatn.variable} font-sans antialiased bg-gray-50`}>
-        <DynamicColors />
+        {/* <DynamicColors /> */}
         <SyncProvider />
 
         {/* 🔹 Header ثابت در بالا */}

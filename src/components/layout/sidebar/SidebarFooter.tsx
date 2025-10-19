@@ -9,7 +9,7 @@ interface SidebarFooterProps {
 const SidebarFooter = ({ collapsed }: SidebarFooterProps) => {
   return (
     <div className="border-t border-gray-200 p-4 space-y-2">
-      <button className="flex items-center space-x-2 w-full text-gray-700 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition">
+      <button className="flex items-center space-x-2 w-full text-gray-700 hover:text-teal-500 hover:bg-teal-100 p-2 rounded-lg transition">
         <Settings size={20} />
         {!collapsed && <span>تنظیمات</span>}
       </button>

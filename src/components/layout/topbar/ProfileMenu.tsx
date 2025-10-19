@@ -11,7 +11,7 @@ export default function ProfileMenu({ name, avatar }: ProfileMenuProps) {
       <img
         src={avatar}
         alt={name}
-        className="w-8 h-8 rounded-sm object-cover border border-custom"
+        className="w-8 h-8 rounded-sm object-cover border border-teal-400"
       />
       <span className="text-slate-700 text-sm font-medium">{name}</span>
       <svg
