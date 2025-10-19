@@ -1,11 +1,18 @@
+// app/layout.tsx
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Vazirmatn } from "next/font/google";
 import "./globals.css";
 import { SyncProvider } from "@/offline/SyncProvider";
-import Header from "@/components/layout/header/Header";
+import TopBar from "@/components/layout/topbar/TopBar";
+import DynamicColors from "@/components/dynamic-colors.tsx/DynamicColors";
+import Sidebar from "@/components/layout/sidebar/Sidebar";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+const vazirmatn = Vazirmatn({
+  subsets: ["arabic"],
+  weight: ["400", "500", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Management Ledger",
@@ -14,16 +21,30 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="fa" dir="rtl" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Header />
+      <body className={`${vazirmatn.variable} font-sans antialiased bg-gray-50`}>
+        {/* <DynamicColors /> */}
         <SyncProvider />
-        {children}
+
+        {/* 🔹 Header ثابت در بالا */}
+        <TopBar />
+
+        {/* 🔹 کانتینر اصلی داشبورد */}
+        <div className="flex flex-row-reverse pt-[60px] h-screen overflow-hidden">
+          {/* Sidebar ثابت */}
+          <div className="fixed top-[60px] bottom-0 right-0">
+            <Sidebar />
+          </div>
+
+          {/* بخش محتوا - فقط این بخش اسکرول شود */}
+          <main className="flex-1 overflow-y-auto mr-[16rem] p-6">
+            {children}
+          </main>
+        </div>
       </body>
     </html>
-
   );
 }

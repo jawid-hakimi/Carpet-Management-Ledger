@@ -1,28 +1,60 @@
 "use client";
 
 import { Card } from "@/components/ui/Card";
-import { AreaChart, Area, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-const expenseData = [
-  { month: "فروردین", expense: 800 },
-  { month: "اردیبهشت", expense: 1200 },
-  { month: "خرداد", expense: 900 },
-  { month: "تیر", expense: 1100 },
-  { month: "مرداد", expense: 1300 },
+const expenseData: { [key: string]: any }[] = [
+  { month: "حمل", expense: 800 },
+  { month: "ثور", expense: 1200 },
+  { month: "جوزا", expense: 900 },
+  { month: "سرطا", expense: 1100 },
+  { month: "اسد", expense: 1300 },
+  { month: "سنبله", expense: 1400 },
 ];
 
-export default function ExpenseChart() {
+const COLORS = ["#ef4444", "#f87171", "#fca5a5", "#dc2626", "#b91c1c"];
+
+export default function ExpenseDonutChart() {
   return (
-    <Card>
-      <div>
-        <h1>نمودار مصارف</h1>
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-red-700">مصارف شش ماه اخیر</h2>
       </div>
-      <div>
-        <ResponsiveContainer width="100%" height={250}>
-          <AreaChart data={expenseData}>
-            <Area type="monotone" dataKey="expense" stroke="#ef4444" fill="#fecaca" />
-            <Tooltip />
-          </AreaChart>
+
+      <div className="h-64">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={expenseData}
+              dataKey="expense"
+              nameKey="month"
+              cx="50%"
+              cy="50%"
+              innerRadius="60%"
+              outerRadius="90%"
+              paddingAngle={5}
+              cornerRadius={8}
+            >
+              {expenseData.map((entry, index) => (
+                <Cell key={index} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip
+              formatter={(value: number) => [`${value.toLocaleString()} افغانی`, "مصارف"]}
+              contentStyle={{
+                backgroundColor: "white",
+                border: "1px solid #e2e8f0",
+                borderRadius: "8px",
+                boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
+              }}
+            />
+          </PieChart>
         </ResponsiveContainer>
       </div>
     </Card>

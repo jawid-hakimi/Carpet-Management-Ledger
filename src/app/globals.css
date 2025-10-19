@@ -1,2 +1,14 @@
 @import "tailwindcss";
 
+
+/* فونت و راست‌چین */
+html {
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  direction: rtl;
+
+}
+
+body {
+  @apply font-sans;
+}
