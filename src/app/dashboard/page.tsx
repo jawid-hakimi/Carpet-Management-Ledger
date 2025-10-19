@@ -6,7 +6,6 @@ import SalesChart from "./components/SalesChart";
 import ProfitChart from "./components/ProfitChart";
 import ExpenseChart from "./components/ExpenseChart";
 import RecentTransactions from "./components/RecentTransactions";
-import RecentActivities from "./components/RecentActivities";
 import Notifications from "./components/Notifications";
 import InventorySummary from "./components/InventorySummary";
 

@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { motion, HTMLMotionProps } from "framer-motion";
 import React from "react";
 
-type ButtonVariant = "primary" | "outline" | "ghost" | "destructive";
+type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive";
 type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps extends Omit<HTMLMotionProps<"button">, "ref"> {
@@ -31,16 +31,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref
     ) => {
         const base =
-            "inline-flex items-center justify-center font-medium rounded-2xl transition-all duration-200 ease-in-out-soft focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed";
+            "inline-flex items-center justify-center font-medium rounded-lg hover:cursor-pointer transition-all duration-200 ease-in-out-soft focus:outline-none  disabled:opacity-60 disabled:cursor-not-allowed ";
 
         const variantsMap = {
-            primary: "bg-primary text-white hover:bg-primary-hover focus:ring-primary",
-            outline:
-                "border border-primary text-primary hover:bg-primary/10 focus:ring-primary",
-            ghost:
-                "text-primary hover:bg-primary/10 focus:ring-primary focus:ring-offset-1",
-            destructive:
-                "bg-error text-white hover:bg-error/90 focus:ring-error focus:ring-offset-1",
+            primary: "bg-primary text-white hover:shadow-lg hover:shadow-custom ",
+            secondary:"border border-primary text-primary hover:bg-primary",
+            ghost:"text-primary hover:bg-primary/10 focus:ring-offset-1",
+            destructive:"bg-error text-white hover:bg-error/90 focus:ring-error focus:ring-offset-1",
         };
 
         const sizesMap = {

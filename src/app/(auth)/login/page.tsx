@@ -1,48 +1,65 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Alert } from "@/components/ui/Alert";
 import { usePost } from "@/hooks/usePost";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Loader2 } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [form, setForm] = useState({ username: "", password: "" });
-  const [error, setError] = useState<string | null>(null);
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   const { postData, loading } = usePost("/api/auth/login");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+
+    // ریست خطاها
+    setUsernameError(null);
+    setPasswordError(null);
+    setFormError(null);
     setSuccess(false);
 
-    if (!form.username || !form.password) {
-      setError("لطفاً نام کاربری و گذرواژه را وارد کنید.");
-      return;
+    let hasError = false;
+
+    if (!form.username) {
+      setUsernameError("لطفاً شماره تماس را وارد کنید.");
+      hasError = true;
     }
 
+    if (!form.password) {
+      setPasswordError("لطفاً رمز عبور را وارد کنید.");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    // ارسال به API
     const res = await postData(form);
     if (res.success) {
       setSuccess(true);
       setTimeout(() => router.push("/dashboard"), 1000);
     } else {
-      setError(res.message || "اطلاعات ورود نادرست است. دوباره تلاش کنید.");
+      setFormError(res.message || "اطلاعات ورود نادرست است. دوباره تلاش کنید.");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-background-dark dark:from-background-dark dark:via-background dark:to-black px-4">
+    <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center px-4 bg-background">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full max-w-md bg-white/80 dark:bg-background-dark/90 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-secondary/20"
+        className="w-full max-w-md bg-white/80  backdrop-blur-md rounded-xl shadow-xl p-8 border border-gray-300"
       >
         {/* لوگو / آیکون */}
         <div className="flex justify-center mb-6">
@@ -53,14 +70,14 @@ export default function LoginPage() {
 
         {/* عنوان */}
         <h1 className="text-2xl font-semibold text-center mb-2 text-foreground">
-          خوش آمدید 👋
+          خوش آمدید
         </h1>
         <p className="text-center text-sm text-secondary mb-6">
           لطفاً وارد حساب کاربری خود شوید
         </p>
 
-        {/* هشدارها */}
-        {error && <Alert type="error" message={error} className="mb-4" />}
+        {/* هشدار فرم */}
+        {formError && <Alert type="error" message={formError} className="mb-4" />}
         {success && (
           <Alert
             type="success"
@@ -72,24 +89,28 @@ export default function LoginPage() {
         {/* فرم ورود */}
         <form onSubmit={handleSubmit} className="space-y-4 text-right">
           <Input
-            label="نام کاربری"
-            placeholder="نام کاربری خود را وارد کنید"
+            label="شماره تماس"
+            placeholder="شماره تماس خود را وارد کنید"
             value={form.username}
             onChange={(e) => setForm({ ...form, username: e.target.value })}
             disabled={loading}
-            required
             dir="rtl"
+            error={usernameError ?? undefined}
           />
           <Input
-            label="گذرواژه"
+            label="رمز عبور"
             type="password"
             placeholder="••••••••"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             disabled={loading}
-            required
             dir="rtl"
+            error={passwordError ?? undefined}
           />
+
+          <Link href="/forgot-password" className="text-sm text-blue-500 hover:underline">
+            رمز عبور خود را فراموش کرده‌اید؟
+          </Link>
 
           <Button
             type="submit"
@@ -99,7 +120,7 @@ export default function LoginPage() {
             loading={loading}
             loadingText="در حال ورود"
           >
-           ورود
+            ورود
           </Button>
         </form>
       </motion.div>
