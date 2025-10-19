@@ -50,7 +50,7 @@ export default function CompaniesPage() {
     };
 
     return (
-        <div className="container mx-auto p-6">
+        <div className="container mx-auto">
             <PageHeader
                 title="مدیریت شرکت‌ها"
                 description="لیست تمام شرکت‌های ثبت شده در سیستم"
