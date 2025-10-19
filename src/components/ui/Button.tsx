@@ -34,7 +34,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             "inline-flex items-center justify-center font-medium rounded-lg hover:cursor-pointer transition-all duration-200 ease-in-out-soft focus:outline-none  disabled:opacity-60 disabled:cursor-not-allowed ";
 
         const variantsMap = {
-            primary: "bg-primary text-white hover:shadow-lg hover:shadow-custom ",
+            primary: "bg-teal-600 text-white hover:bg-teal-700 ",
             secondary:"border border-primary text-primary hover:bg-primary",
             ghost:"text-primary hover:bg-primary/10 focus:ring-offset-1",
             destructive:"bg-error text-white hover:bg-error/90 focus:ring-error focus:ring-offset-1",

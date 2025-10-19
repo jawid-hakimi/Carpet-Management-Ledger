@@ -1,146 +1,224 @@
 // src/components/ui/DataTable.tsx
 "use client";
-import React from "react";
-import { cn } from "@/utils/utils";
-import { ChevronUp, ChevronDown } from "lucide-react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { Search } from "./Search";
+import { Select } from "./Select";
+import { Pagination } from "./Pagination";
+import { ChevronDown, ChevronUp, Search as SearchIcon } from "lucide-react";
 
-export type Column<T> = {
+interface Column {
   key: string;
-  title: string;
+  label: string;
   sortable?: boolean;
-  render?: (row: T) => React.ReactNode;
-  className?: string;
-};
-
-interface DataTableProps<T> {
-  columns: Column<T>[];
-  data: T[];
-  page?: number;
-  pageSize?: number;
-  total?: number;
-  onSort?: (key: string, dir: "asc" | "desc" | null) => void;
-  sortKey?: string | null;
-  sortDir?: "asc" | "desc" | null;
-  loading?: boolean;
-  selectable?: boolean;
-  onSelect?: (selected: T[]) => void;
+  render?: (value: any, row: any) => React.ReactNode;
 }
 
-export function DataTable<T extends { id?: string | number }>({
-  columns,
+interface DataTableProps {
+  data: any[];
+  columns: Column[];
+  title?: string;
+  searchable?: boolean;
+  actions?: (row: any) => { label: string; icon: React.ReactNode; onClick: () => void }[];
+  onRowClick?: (row: any) => void;
+}
+
+export function DataTable({
   data,
-  page = 1,
-  pageSize = 10,
-  total,
-  onSort,
-  sortKey,
-  sortDir,
-  loading = false,
-  selectable = false,
-  onSelect,
-}: DataTableProps<T>) {
-  const [selectedIds, setSelectedIds] = React.useState<Set<string | number>>(new Set());
+  columns,
+  title,
+  searchable = true,
+  actions,
+  onRowClick
+}: DataTableProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  React.useEffect(() => {
-    if (onSelect) {
-      const rows = data.filter((d) => d.id && selectedIds.has(d.id));
-      onSelect(rows);
-    }
-  }, [selectedIds, data, onSelect]);
+  // Filter data based on search term
+  const filteredData = data.filter(row =>
+    columns.some(column =>
+      String(row[column.key]).toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
 
-  const toggleRow = (id?: string | number) => {
-    if (!id) return;
-    const s = new Set(selectedIds);
-    s.has(id) ? s.delete(id) : s.add(id);
-    setSelectedIds(s);
+  // Sort data
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (!sortConfig) return 0;
+
+    const aValue = a[sortConfig.key];
+    const bValue = b[sortConfig.key];
+
+    if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const paginatedData = sortedData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleSort = (key: string) => {
+    setSortConfig(current =>
+      current?.key === key
+        ? { key, direction: current.direction === 'asc' ? 'desc' : 'asc' }
+        : { key, direction: 'asc' }
+    );
   };
 
-  const toggleAll = () => {
-    if (selectedIds.size === data.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(data.map((d) => d.id!).filter(Boolean)));
-    }
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
-  const handleSort = (col: Column<T>) => {
-    if (!col.sortable || !onSort) return;
-    if (sortKey !== col.key) onSort(col.key, "asc");
-    else if (sortDir === "asc") onSort(col.key, "desc");
-    else onSort(col.key, null);
-  };
+  // Options for items per page select
+  const itemsPerPageOptions = [
+    { value: "5", label: "5 مورد در صفحه" },
+    { value: "10", label: "10 مورد در صفحه" },
+    { value: "25", label: "25 مورد در صفحه" },
+    { value: "50", label: "50 مورد در صفحه" }
+  ];
 
   return (
-    <div className="w-full overflow-x-auto rounded-2xl bg-white dark:bg-background-dark shadow-card p-2">
-      <table className="min-w-full table-auto">
-        <thead>
-          <tr>
-            {selectable && (
-              <th className="px-4 py-2">
-                <input
-                  type="checkbox"
-                  checked={selectedIds.size === data.length && data.length > 0}
-                  onChange={toggleAll}
-                />
-              </th>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+      {/* Header */}
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">{title || "Data Table"}</h2>
+            <p className="text-sm text-gray-600 mt-1">
+              {filteredData.length} مورد یافت شد
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            {searchable && (
+              <Search
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder="جستجو..."
+              />
             )}
-            {columns.map((col) => (
-              <th
-                key={col.key}
-                className={cn("text-left px-4 py-3 text-sm font-medium text-secondary", col.className)}
-              >
-                <button
-                  className="inline-flex items-center gap-2"
-                  onClick={() => handleSort(col)}
+
+            <div className="w-52">
+              <Select
+                options={itemsPerPageOptions}
+                value={itemsPerPage.toString()}
+                onChange={(value) => setItemsPerPage(Number(value))}
+                placeholder="تعداد در صفحه"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gray-50 border-b border-gray-200">
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  className={`px-6 py-4 text-right text-sm font-semibold text-gray-900 ${column.sortable ? 'cursor-pointer hover:bg-gray-100' : ''
+                    }`}
+                  onClick={() => column.sortable && handleSort(column.key)}
                 >
-                  <span>{col.title}</span>
-                  {col.sortable && (
-                    <motion.span
-                      initial={{ opacity: 0.6 }}
-                      animate={{ opacity: 1 }}
-                      className="ml-1"
-                    >
-                      {sortKey === col.key ? (
-                        sortDir === "asc" ? <ChevronUp size={14} /> : <ChevronDown size={14} />
-                      ) : (
-                        <ChevronUp size={12} className="opacity-40" />
-                      )}
-                    </motion.span>
-                  )}
-                </button>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr><td colSpan={columns.length + (selectable ? 1 : 0)} className="p-6">در حال بارگذاری...</td></tr>
-          ) : data.length === 0 ? (
-            <tr><td colSpan={columns.length + (selectable ? 1 : 0)} className="p-6 text-center text-sm text-secondary">موردی یافت نشد</td></tr>
-          ) : (
-            data.map((row) => (
-              <tr key={row.id ?? Math.random()} className="group hover:bg-primary/5 transition">
-                {selectable && (
-                  <td className="px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={row.id ? selectedIds.has(row.id) : false}
-                      onChange={() => toggleRow(row.id)}
-                    />
-                  </td>
-                )}
-                {columns.map((col) => (
-                  <td key={col.key} className="px-4 py-3 align-top text-sm">
-                    {col.render ? col.render(row) : (row as any)[col.key]}
+                  <div className="flex items-center justify-start gap-2">
+                    {column.label}
+                    {column.sortable && (
+                      <div className="flex flex-col">
+                        <ChevronUp
+                          size={14}
+                          className={`${sortConfig?.key === column.key && sortConfig.direction === 'asc'
+                              ? 'text-teal-500'
+                              : 'text-gray-400'
+                            }`}
+                        />
+                        <ChevronDown
+                          size={14}
+                          className={`-mt-1 ${sortConfig?.key === column.key && sortConfig.direction === 'desc'
+                              ? 'text-teal-500'
+                              : 'text-gray-400'
+                            }`}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </th>
+              ))}
+              {actions && <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">عملیات</th>}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {paginatedData.map((row, index) => (
+              <tr
+                key={index}
+                className={`hover:bg-gray-50 transition-colors ${onRowClick ? 'cursor-pointer' : ''
+                  }`}
+                onClick={() => onRowClick?.(row)}
+              >
+                {columns.map((column) => (
+                  <td key={column.key} className="px-6 py-4 text-sm text-gray-900">
+                    {column.render ? column.render(row[column.key], row) : row[column.key]}
                   </td>
                 ))}
+                {actions && (
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-end gap-2">
+                      {actions(row).map((action, actionIndex) => (
+                        <button
+                          key={actionIndex}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            action.onClick();
+                          }}
+                          className="p-2 text-gray-600 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                          title={action.label}
+                        >
+                          {action.icon}
+                        </button>
+                      ))}
+                    </div>
+                  </td>
+                )}
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-      {/* pagination area can be placed by parent; this component emits nothing by default */}
+            ))}
+          </tbody>
+        </table>
+
+        {/* Empty State */}
+        {paginatedData.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-gray-400 mb-4">
+              <SearchIcon size={48} className="mx-auto" />
+            </div>
+            <p className="text-gray-500 text-lg">موردی یافت نشد</p>
+            <p className="text-gray-400 text-sm mt-1">
+              {searchTerm ? "سعی کنید عبارت جستجو را تغییر دهید" : "هیچ داده‌ای موجود نیست"}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="px-6 py-4 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="text-sm text-gray-600">
+              نمایش {(currentPage - 1) * itemsPerPage + 1} تا {Math.min(currentPage * itemsPerPage, filteredData.length)} از {filteredData.length} مورد
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

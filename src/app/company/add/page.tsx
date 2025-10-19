@@ -3,28 +3,34 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/Input";
-import { Dropdown } from "@/components/ui/Dropdown";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
+import { FileUpload } from "@/components/ui/FileUpload";
+import { ImageUpload } from "@/components/ui/ImageUpload";
+import { Button } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 const categories = [
-  { id: "carpet", label: "فروشگاه قالین" },
-  { id: "dishes", label: "فروشگاه ضروف" },
-  { id: "clothes", label: "فروشگاه لباس" },
-  { id: "electronics", label: "فروشگاه وسایل برقی" },
-  { id: "cosmetics", label: "فروشگاه وسایل آرایشی" },
+  { value: "carpet", label: "فروشگاه قالین" },
+  { value: "dishes", label: "فروشگاه ضروف" },
+  { value: "clothes", label: "فروشگاه لباس" },
+  { value: "electronics", label: "فروشگاه وسایل برقی" },
+  { value: "cosmetics", label: "فروشگاه وسایل آرایشی" },
 ];
 
 const durations = [
-  { id: "1m", label: "فعال برای یک ماه" },
-  { id: "2m", label: "فعال برای دو ماه" },
-  { id: "3m", label: "فعال برای سه ماه" },
-  { id: "6m", label: "فعال برای شش ماه" },
-  { id: "1y", label: "فعال برای یک سال" },
+  { value: "1m", label: "فعال برای یک ماه" },
+  { value: "2m", label: "فعال برای دو ماه" },
+  { value: "3m", label: "فعال برای سه ماه" },
+  { value: "6m", label: "فعال برای شش ماه" },
+  { value: "1y", label: "فعال برای یک سال" },
 ];
 
 export default function CreateUserPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [companyLogo, setCompanyLogo] = useState<File | null>(null);
   const [contractFile, setContractFile] = useState<File | null>(null);
   const [category, setCategory] = useState<string>("");
@@ -36,6 +42,7 @@ export default function CreateUserPage() {
     const formData = {
       firstName,
       lastName,
+      phoneNumber,
       companyName,
       companyLogo,
       contractFile,
@@ -44,80 +51,103 @@ export default function CreateUserPage() {
       description,
     };
     console.log(formData);
-    alert("اطلاعات در کنسول چاپ شد!");
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">ایجاد کاربر</h1>
+    <div className="w-full">
+      <PageHeader
+        title="ایجاد کاربر"
+        showHomeIcon={true}
+        description="اطلاعات جدید کاربر را در فرم زیر وارد کنید"
+      />
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Input
-          label="نام"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          placeholder="نام"
-        />
-        <Input
-          label="نام خانوادگی"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          placeholder="نام خانوادگی"
-        />
-        <Input
-          label="نام شرکت"
-          value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
-          placeholder="نام شرکت"
-        />
-        <div>
-          <label className="block text-sm font-medium mb-1">لگوی شرکت</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setCompanyLogo(e.target.files?.[0] || null)}
-            className="w-full border rounded-md px-3 py-2"
+        <div className="grid grid-cols-2 gap-2 md:gap-4">
+
+
+          <Input
+            label="نام"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="نام"
           />
+          <Input
+            label="نام خانوادگی"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            placeholder="نام خانوادگی"
+          />
+
+          <Input
+            label="شماره تماس"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="شماره تماس"
+          />
+
+          <Input
+            label="نام شرکت"
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            placeholder="نام شرکت"
+          />
+
+          <div>
+            <label className="block text-sm font-medium mb-2">لگوی شرکت</label>
+            <ImageUpload
+              onImageSelect={setCompanyLogo}
+              label="لگوی شرکت را انتخاب کنید"
+              maxSize={2}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">فایل قرارداد</label>
+            <FileUpload
+              onFileSelect={setContractFile}
+              accept=".pdf,.doc,.docx"
+              label="فایل قرارداد را انتخاب کنید"
+              maxSize={10}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">کتگوری</label>
+            <Select
+              options={categories}
+              value={category}
+              onChange={setCategory}
+              placeholder="انتخاب کتگوری"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">مدت فعال بودن</label>
+            <Select
+              options={durations}
+              value={duration}
+              onChange={setDuration}
+              placeholder="مدت فعال بودن فروشگاه"
+            />
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">فایل قرارداد</label>
-          <input
-            type="file"
-            onChange={(e) => setContractFile(e.target.files?.[0] || null)}
-            className="w-full border rounded-md px-3 py-2"
-          />
-        </div>
-        <div className="flex gap-4">
-          <Dropdown
-            label={category || "انتخاب کتگوری"}
-            items={categories.map((cat) => ({
-              ...cat,
-              onClick: () => setCategory(cat.label),
-            }))}
-          />
-          <Dropdown
-            label={duration || "مدت فعال بودن فروشگاه"}
-            items={durations.map((d) => ({
-              ...d,
-              onClick: () => setDuration(d.label),
-            }))}
-          />
-        </div>
+
         <div>
           <label className="block text-sm font-medium mb-1">توضیحات</label>
-          <textarea
+          <Textarea
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full border rounded-md px-3 py-2"
-            rows={4}
+            onChange={setDescription}
             placeholder="توضیحات کاربر"
+            rows={4}
           />
         </div>
-        <button
+
+        <Button
           type="submit"
-          className="bg-teal-500 text-white px-6 py-2 rounded-md hover:bg-teal-600 transition"
+          variant="primary"
+
         >
           ایجاد کاربر
-        </button>
+        </Button>
       </form>
     </div>
   );
