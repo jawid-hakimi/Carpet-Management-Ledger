@@ -24,7 +24,7 @@ export const sidebarMenu = [
     title: 'فروشات',
     icon: ShoppingBag,
     submenu: [
-      { title: 'فروش مورد جدید', link: '/sales/new' },
+      { title: 'فروش مورد جدید', link: '/sales/create' },
       { title: 'لیست فروشات', link: '/sales/list' },
     ],
   },

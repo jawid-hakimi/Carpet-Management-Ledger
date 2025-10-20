@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/utils/utils";
-import { Loader2, Check, Plus, Edit, Trash2, Eye, Download, Upload, Search, Filter, ChevronRight, ChevronLeft, X } from "lucide-react";
+import { Loader2, Check, Plus, Edit, Trash2, Eye, Download, Upload, Search, Filter, ChevronRight, ChevronLeft, X, Printer } from "lucide-react";
 import { motion, HTMLMotionProps } from "framer-motion";
 import React from "react";
 
@@ -245,6 +245,11 @@ export const UploadButton = React.forwardRef<HTMLButtonElement, Omit<ButtonProps
     (props, ref) => <Button ref={ref} icon={<Upload className="w-4 h-4" />} variant="outline" {...props} />
 );
 UploadButton.displayName = "UploadButton";
+
+export const PrintButton = React.forwardRef<HTMLButtonElement, Omit<ButtonProps, 'icon'>>(
+    (props, ref) => <Button ref={ref} icon={<Printer className="w-4 h-4" />} variant="outline" {...props} />
+);
+PrintButton.displayName = "PrintButton";
 
 export const SearchButton = React.forwardRef<HTMLButtonElement, Omit<ButtonProps, 'icon'>>(
     (props, ref) => <Button ref={ref} icon={<Search className="w-4 h-4" />} variant="ghost" {...props} />
