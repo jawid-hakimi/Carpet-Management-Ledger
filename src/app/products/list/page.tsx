@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { DataTable } from "@/components/ui/DataTable";
 import { Eye, Edit, Trash2, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { AddButton } from "@/components/ui/Button";
 
 // داده‌های نمونه
 const mockProducts = [
@@ -55,12 +56,12 @@ export default function ProductsPage() {
 
   const handleView = (product: any) => {
     console.log("View product:", product);
-    // navigation to product details
+    router.push(`/products/${product.id}/details`);
   };
 
   const handleEdit = (product: any) => {
     console.log("Edit product:", product);
-    router.push(`/products/edit/${product.id}`);
+    router.push(`/products/${product.id}/edit`);
   };
 
   const handleDelete = (product: any) => {
@@ -102,7 +103,7 @@ export default function ProductsPage() {
           kilim: { color: "bg-purple-100 text-purple-800", label: "کلیم" },
           gabbeh: { color: "bg-amber-100 text-amber-800", label: "گبه" }
         };
-        
+
         const config = typeConfig[value as keyof typeof typeConfig];
         return (
           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${config.color}`}>
@@ -130,29 +131,18 @@ export default function ProductsPage() {
       )
     },
     {
-      key: "salePrice",
-      label: "قیمت فروش",
-      sortable: true,
-      render: (value: number) => (
-        <span className="font-medium text-green-600">
-          {value.toLocaleString()} افغانی
-        </span>
-      )
-    },
-    {
       key: "stock",
       label: "موجودی",
       sortable: true,
       render: (value: number, row: any) => {
         const isOutOfStock = value === 0;
         const isLowStock = value > 0 && value < 5;
-        
+
         return (
           <div className="flex flex-col">
-            <span className={`font-medium ${
-              isOutOfStock ? "text-red-600" : 
-              isLowStock ? "text-amber-600" : "text-green-600"
-            }`}>
+            <span className={`font-medium ${isOutOfStock ? "text-red-600" :
+                isLowStock ? "text-amber-600" : "text-green-600"
+              }`}>
               {value} عدد
             </span>
             {isLowStock && (
@@ -175,7 +165,7 @@ export default function ProductsPage() {
           out_of_stock: { color: "bg-red-100 text-red-800", label: "ناموجود" },
           discontinued: { color: "bg-gray-100 text-gray-800", label: "متوقف شده" }
         };
-        
+
         const config = statusConfig[value as keyof typeof statusConfig];
         return (
           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${config.color}`}>
@@ -214,13 +204,13 @@ export default function ProductsPage() {
       />
 
       <div className="mb-6 flex justify-end">
-        <button
+        <AddButton
+          size="md"
           onClick={handleAddProduct}
-          className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
         >
-          <Plus size={18} />
+
           افزودن محصول جدید
-        </button>
+        </AddButton>
       </div>
 
       <DataTable

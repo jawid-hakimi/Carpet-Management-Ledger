@@ -1,9 +1,9 @@
 // src/app/companies/page.tsx
 "use client";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { CompanyTable } from "../components/CompanyTable";
+import { UserTable } from "../components/UserTable";
+import { useRouter } from "next/navigation";
 
-// در src/app/company/list/page.tsx
 const mockCompanies = [
     {
         id: "1",
@@ -14,7 +14,7 @@ const mockCompanies = [
         createdAt: "2024-01-15",
     },
     {
-        id: "2",
+        id: "2", 
         name: "لوازم خانگی برقی",
         category: "وسایل برقی",
         owner: "محمد حسینی",
@@ -23,7 +23,7 @@ const mockCompanies = [
     },
     {
         id: "3",
-        name: "پوشاک مدرن",
+        name: "پوشاک مدرن", 
         category: "لباس و پوشاک",
         owner: "فاطمه کریمی",
         status: "active" as const,
@@ -31,15 +31,17 @@ const mockCompanies = [
     }
 ];
 
-export default function CompaniesPage() {
+export default function UserListPage() {
+    const router = useRouter();
+
     const handleView = (company: any) => {
         console.log("View company:", company);
-        // navigation to company details
+        router.push(`/users/${company.id}/details`);
     };
 
     const handleEdit = (company: any) => {
         console.log("Edit company:", company);
-        // navigation to edit page
+        router.push(`/users/${company.id}/edit`);
     };
 
     const handleDelete = (company: any) => {
@@ -50,14 +52,14 @@ export default function CompaniesPage() {
     };
 
     return (
-        <div className="container mx-auto">
+        <div className="w-full">
             <PageHeader
                 title="مدیریت شرکت‌ها"
                 description="لیست تمام شرکت‌های ثبت شده در سیستم"
                 showHomeIcon={true}
             />
 
-            <CompanyTable
+            <UserTable
                 companies={mockCompanies}
                 onView={handleView}
                 onEdit={handleEdit}

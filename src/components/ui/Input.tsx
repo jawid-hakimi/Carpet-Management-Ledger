@@ -11,11 +11,11 @@ export const Input = ({ label, error, icon, className, ...props }: InputProps) =
   return (
     <div className="w-full flex flex-col space-y-1">
       {label && (
-        <label className="text-sm font-medium text-gray-700">{label}</label>
+        <label className="text-sm font-medium text-gray-600">{label}</label>
       )}
       <div className="relative">
         {icon && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-teal-500">
             {icon}
           </span>
         )}

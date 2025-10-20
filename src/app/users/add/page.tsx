@@ -7,12 +7,14 @@ import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { ImageUpload } from "@/components/ui/ImageUpload";
-import { Button } from "@/components/ui/Button";
+import { SaveButton, CancelButton } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { Switch } from "@/components/ui/Switch";
+import { useRouter } from "next/navigation";
 
 const categories = [
   { value: "carpet", label: "فروشگاه قالین" },
-  { value: "dishes", label: "فروشگاه ضروف" },
+  { value: "dishes", label: "فروشگاه ظروف" },
   { value: "clothes", label: "فروشگاه لباس" },
   { value: "electronics", label: "فروشگاه وسایل برقی" },
   { value: "cosmetics", label: "فروشگاه وسایل آرایشی" },
@@ -27,6 +29,7 @@ const durations = [
 ];
 
 export default function CreateUserPage() {
+  const router = useRouter();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -36,6 +39,7 @@ export default function CreateUserPage() {
   const [category, setCategory] = useState<string>("");
   const [duration, setDuration] = useState<string>("");
   const [description, setDescription] = useState("");
+  const [isActive, setIsActive] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,8 +53,17 @@ export default function CreateUserPage() {
       category,
       duration,
       description,
+      isActive,
     };
     console.log(formData);
+    alert("کاربر با موفقیت ایجاد شد!");
+    router.push("/users");
+  };
+
+  const handleCancel = () => {
+    if (confirm("آیا از انصراف مطمئن هستید؟ اطلاعات ذخیره نخواهند شد.")) {
+      router.back();
+    }
   };
 
   return (
@@ -60,21 +73,23 @@ export default function CreateUserPage() {
         showHomeIcon={true}
         description="اطلاعات جدید کاربر را در فرم زیر وارد کنید"
       />
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-2 md:gap-4">
 
-
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="نام"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             placeholder="نام"
+            required
           />
+
           <Input
             label="نام خانوادگی"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             placeholder="نام خانوادگی"
+            required
           />
 
           <Input
@@ -82,6 +97,7 @@ export default function CreateUserPage() {
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="شماره تماس"
+            required
           />
 
           <Input
@@ -89,6 +105,7 @@ export default function CreateUserPage() {
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
             placeholder="نام شرکت"
+            required
           />
 
           <div>
@@ -111,7 +128,7 @@ export default function CreateUserPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">کتگوری</label>
+            <label className="block text-sm font-medium mb-2">کتگوری</label>
             <Select
               options={categories}
               value={category}
@@ -121,7 +138,7 @@ export default function CreateUserPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">مدت فعال بودن</label>
+            <label className="block text-sm font-medium mb-2">مدت فعال بودن</label>
             <Select
               options={durations}
               value={duration}
@@ -129,10 +146,32 @@ export default function CreateUserPage() {
               placeholder="مدت فعال بودن فروشگاه"
             />
           </div>
+
+          {/* وضعیت فعال/غیرفعال */}
+          <div className="md:col-span-2">
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium text-gray-900">وضعیت حساب کاربری</h4>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {isActive
+                      ? "حساب کاربری فعال است و می‌تواند از سیستم استفاده کند"
+                      : "حساب کاربری غیرفعال است و دسترسی ندارد"
+                    }
+                  </p>
+                </div>
+                <Switch
+                  size="md"
+                  checked={isActive}
+                  onChange={setIsActive}
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">توضیحات</label>
+          <label className="block text-sm font-medium mb-2">توضیحات</label>
           <Textarea
             value={description}
             onChange={setDescription}
@@ -141,13 +180,22 @@ export default function CreateUserPage() {
           />
         </div>
 
-        <Button
-          type="submit"
-          variant="primary"
+        {/* دکمه‌های اقدام */}
+        <div className="flex gap-4 justify-end pt-6 border-t border-gray-200">
+          <CancelButton
+            size="md"
+            onClick={handleCancel}
+          >
+            انصراف
+          </CancelButton>
 
-        >
-          ایجاد کاربر
-        </Button>
+          <SaveButton
+            size="md"
+            type="submit"
+          >
+            ایجاد کاربر
+          </SaveButton>
+        </div>
       </form>
     </div>
   );

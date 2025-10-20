@@ -1,4 +1,4 @@
-// src/components/CompanyTable.tsx
+// src/components/UserTable.tsx
 import { DataTable } from "@/components/ui/DataTable";
 import { Eye, Edit, Trash2, Building } from "lucide-react";
 
@@ -11,14 +11,14 @@ interface Company {
     createdAt: string;
 }
 
-interface CompanyTableProps {
+interface UserTableProps {
     companies: Company[];
     onView: (company: Company) => void;
     onEdit: (company: Company) => void;
     onDelete: (company: Company) => void;
 }
 
-export function CompanyTable({ companies, onView, onEdit, onDelete }: CompanyTableProps) {
+export function UserTable({ companies, onView, onEdit, onDelete }: UserTableProps) {
     const columns = [
         {
             key: "name",

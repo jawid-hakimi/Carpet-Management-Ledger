@@ -1,10 +1,8 @@
 import {
   LayoutDashboard,
   Package,
-  PlusCircle,
-  List,
   ShoppingBag,
-  Building2,
+  Users ,
   FileText,
 } from 'lucide-react';
 
@@ -31,11 +29,11 @@ export const sidebarMenu = [
     ],
   },
   {
-    title: 'کمپانی',
-    icon: Building2,
+    title: 'کاربران',
+    icon: Users ,
     submenu: [
-      { title: 'اضافه نمودن کمپانی', link: '/company/add' },
-      { title: 'لیست کمپانی‌ها', link: '/company/list' },
+      { title: 'افزودن کاربر جدید', link: '/users/add' },
+      { title: 'لیست کاربران', link: '/users/list' },
     ],
   },
   {

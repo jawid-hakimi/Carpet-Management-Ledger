@@ -2,15 +2,17 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Check } from "lucide-react";
+import { div } from "framer-motion/client";
 
 interface SelectProps {
   options: { value: string; label: string }[];
   value?: string;
   onChange?: (value: string) => void;
   placeholder?: string;
+  label?: string;
 }
 
-export function Select({ options, value, onChange, placeholder = "Select Options" }: SelectProps) {
+export function Select({ options, value, label, onChange, placeholder = "Select Options" }: SelectProps) {
   const [open, setOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
@@ -29,16 +31,19 @@ export function Select({ options, value, onChange, placeholder = "Select Options
 
   return (
     <div ref={selectRef} className="relative w-full">
+      {label && (
+        <label className="text-sm font-medium text-gray-600">{label}</label>
+      )}
       {/* دکمه اصلی */}
-      <button 
+      <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full px-4 py-2 rounded-md ring ring-gray-300 bg-white flex items-center justify-between hover:ring-2 hover:ring-teal-500 transition-all duration-150"
+        className={`w-full px-4 py-2 text-sm rounded-md ring ring-gray-300 bg-white flex items-center justify-between hover:ring-2 hover:ring-teal-500 transition-all duration-150 ${label ? "mt-1" : ""}`}
       >
-        <span className={selected ? "text-gray-900" : "text-gray-500"}>
+        <span className={selected ? "text-gray-900" : "text-gray-500 "}>
           {selected ? selected.label : placeholder}
         </span>
-        <ChevronDown size={18} className={`text-gray-500 transition-all duration-100 ${open?"rotate-180" :""}`} />
+        <ChevronDown size={18} className={`text-teal-500 transition-all duration-100 ${open ? "rotate-180" : ""}`} />
       </button>
 
       {/* لیست options */}
@@ -51,9 +56,8 @@ export function Select({ options, value, onChange, placeholder = "Select Options
                 onChange?.(option.value);
                 setOpen(false);
               }}
-              className={`flex items-center justify-between text-sm px-4 py-2 cursor-pointer hover:bg-teal-500 hover:text-white transition-all duration-150 ${
-                value === option.value ? "bg-teal-500 text-white" : ""
-              }`}
+              className={`flex items-center justify-between text-sm px-4 py-2 cursor-pointer hover:bg-teal-500 hover:text-white transition-all duration-150 ${value === option.value ? "bg-teal-500 text-white" : ""
+                }`}
             >
               <span>{option.label}</span>
               {value === option.value && <Check size={16} />}
