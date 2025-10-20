@@ -18,12 +18,12 @@ interface SelectProps {
   className?: string;
 }
 
-export function Select({ 
-  options, 
-  value, 
-  label, 
-  onChange, 
-  placeholder = "Select Options", 
+export function Select({
+  options,
+  value,
+  label,
+  onChange,
+  placeholder = "Select Options",
   disabled = false,
   error,
   searchable = false,
@@ -46,10 +46,10 @@ export function Select({
   };
 
   // فیلتر options بر اساس جستجو
-  const filteredOptions = searchable 
-    ? options.filter(option => 
-        option.label.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+  const filteredOptions = searchable
+    ? options.filter(option =>
+      option.label.toLowerCase().includes(searchTerm.toLowerCase())
+    )
     : options;
 
   // بستن دراپ‌دان هنگام کلیک خارج
@@ -91,7 +91,7 @@ export function Select({
           {required && <span className="text-red-500 mr-1">*</span>}
         </label>
       )}
-      
+
       {/* دکمه اصلی */}
       <button
         type="button"
@@ -102,7 +102,7 @@ export function Select({
         <span className={`${selected ? "text-gray-900" : "text-gray-500"} ${disabled ? 'text-gray-400' : ''}`}>
           {selected ? selected.label : placeholder}
         </span>
-        
+
         <div className="flex items-center gap-1 flex-shrink-0">
           {clearable && value && !disabled && (
             <div
@@ -112,9 +112,9 @@ export function Select({
               <X size={14} className="text-gray-400 hover:text-gray-600" />
             </div>
           )}
-          <ChevronDown 
-            size={18} 
-            className={`text-teal-500 transition-all duration-100 ${open ? "rotate-180" : ""} ${disabled ? 'text-gray-400' : ''}`} 
+          <ChevronDown
+            size={18}
+            className={`text-teal-500 transition-all duration-100 ${open ? "rotate-180" : ""} ${disabled ? 'text-gray-400' : ''}`}
           />
         </div>
       </button>
@@ -133,9 +133,9 @@ export function Select({
           {searchable && (
             <div className="p-2 border-b border-gray-200">
               <div className="relative">
-                <Search 
-                  size={16} 
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" 
+                <Search
+                  size={16}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <input
                   ref={searchInputRef}

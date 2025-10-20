@@ -19,11 +19,11 @@ interface ProductSelectionProps {
   onQuantityChange: (quantity: number) => void;
 }
 
-export function ProductSelection({ 
-  selectedProduct, 
-  onProductChange, 
-  quantity, 
-  onQuantityChange 
+export function ProductSelection({
+  selectedProduct,
+  onProductChange,
+  quantity,
+  onQuantityChange
 }: ProductSelectionProps) {
 
   const handleProductSelect = (productId: string) => {
@@ -44,29 +44,32 @@ export function ProductSelection({
         <Package className="ml-2 w-5 h-5" />
         انتخاب محصول
       </h3>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Select
           label="محصول"
-          options={mockProducts.map(p => ({ 
-            value: p.id, 
-            label: `${p.name} (موجودی: ${p.stock})` 
+          options={mockProducts.map(p => ({
+            value: p.id,
+            label: `${p.name} (موجودی: ${p.stock})`
           }))}
           value={selectedProduct?.id || ""}
           onChange={handleProductSelect}
           placeholder="انتخاب محصول"
+          searchable
+          clearable
           required
         />
-
-        <Input
-          label="تعداد"
-          type="number"
-          value={quantity}
-          onChange={(e) => onQuantityChange(parseInt(e.target.value))}
-          min="1"
-          max={selectedProduct?.stock}
-          required
-        />
+        <div className="mt-1">
+          <Input
+            label="تعداد"
+            type="number"
+            value={quantity}
+            onChange={(e) => onQuantityChange(parseInt(e.target.value))}
+            min="1"
+            max={selectedProduct?.stock}
+            required
+          />
+        </div>
 
         {selectedProduct && (
           <>
