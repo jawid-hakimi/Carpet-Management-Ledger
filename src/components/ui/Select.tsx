@@ -1,23 +1,66 @@
 // src/components/ui/Select.tsx
 "use client";
-import { useState } from "react";
-import { cn } from "@/utils/utils";
-import { ChevronDown } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { ChevronDown, Check } from "lucide-react";
+import { div } from "framer-motion/client";
 
-export function Select<T extends { value: string | number; label: string }>({ options, value, onChange, placeholder = "انتخاب کنید" }: { options: T[]; value?: string | number; onChange?: (v: string | number) => void; placeholder?: string; }) {
+interface SelectProps {
+  options: { value: string; label: string }[];
+  value?: string;
+  onChange?: (value: string) => void;
+  placeholder?: string;
+  label?: string;
+}
+
+export function Select({ options, value, label, onChange, placeholder = "Select Options" }: SelectProps) {
   const [open, setOpen] = useState(false);
+  const selectRef = useRef<HTMLDivElement>(null);
+
   const selected = options.find((o) => o.value === value);
+
+  // بستن دراپ‌دان هنگام کلیک خارج
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="relative inline-block w-full">
-      <button onClick={() => setOpen((s) => !s)} className="w-full px-3 py-2 rounded-xl border border-secondary/20 flex items-center justify-between">
-        <span>{selected ? selected.label : placeholder}</span>
-        <ChevronDown size={16} />
+    <div ref={selectRef} className="relative w-full">
+      {label && (
+        <label className="text-sm font-medium text-gray-600">{label}</label>
+      )}
+      {/* دکمه اصلی */}
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`w-full px-4 py-2 text-sm rounded-md ring ring-gray-300 bg-white flex items-center justify-between hover:ring-2 hover:ring-teal-500 transition-all duration-150 ${label ? "mt-1" : ""}`}
+      >
+        <span className={selected ? "text-gray-900" : "text-gray-500 "}>
+          {selected ? selected.label : placeholder}
+        </span>
+        <ChevronDown size={18} className={`text-teal-500 transition-all duration-100 ${open ? "rotate-180" : ""}`} />
       </button>
+
+      {/* لیست options */}
       {open && (
-        <div className="absolute left-0 right-0 mt-2 rounded-xl shadow-lg bg-white dark:bg-background-dark z-40 max-h-60 overflow-auto p-2">
-          {options.map((opt) => (
-            <div key={opt.value} className="px-3 py-2 rounded hover:bg-primary/5 cursor-pointer" onClick={() => { onChange?.(opt.value); setOpen(false); }}>
-              {opt.label}
+        <div className="absolute left-0 right-0 mt-1 rounded-lg space-y-1 bg-white border border-gray-200 overflow-hidden shadow-lg z-50">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              onClick={() => {
+                onChange?.(option.value);
+                setOpen(false);
+              }}
+              className={`flex items-center justify-between text-sm px-4 py-2 cursor-pointer hover:bg-teal-500 hover:text-white transition-all duration-150 ${value === option.value ? "bg-teal-500 text-white" : ""
+                }`}
+            >
+              <span>{option.label}</span>
+              {value === option.value && <Check size={16} />}
             </div>
           ))}
         </div>

@@ -33,12 +33,12 @@ export const Modal = ({ open, onClose, title, children, size = "md" }: ModalProp
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className={cn("bg-white dark:bg-background-dark rounded-2xl shadow-lg p-6 w-full", sizes[size])}
+            className={cn("bg-white rounded-md shadow-lg p-4 w-full", sizes[size])}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
               {title && <h2 className="text-lg font-semibold text-primary">{title}</h2>}
-              <button onClick={onClose} className="text-secondary hover:text-foreground">
+              <button onClick={onClose} className="text-secondary hover:text-teal-500 hover:cursor-pointer transition-colors duration-100">
                 <X size={18} />
               </button>
             </div>

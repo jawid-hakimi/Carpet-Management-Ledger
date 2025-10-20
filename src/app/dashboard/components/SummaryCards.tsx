@@ -27,7 +27,7 @@ const summaryData = [
     update: "09:40",
   },
   {
-    title: "سود این ماه",
+    title: "فاید این ماه",
     value: "9,300 افغانی",
     icon: TrendingUp ,
     gradient: "from-green-500 to-emerald-600",
