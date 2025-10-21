@@ -86,7 +86,7 @@ export function Select({
   return (
     <div ref={selectRef} className={`relative w-full ${className || ''}`}>
       {label && (
-        <label className={`text-sm font-medium ${error ? 'text-red-600' : 'text-gray-600'} ${disabled ? 'opacity-50' : ''}`}>
+        <label className={`text-sm font-medium mb-1 ${error ? 'text-red-600' : 'text-gray-600'} ${disabled ? 'opacity-50' : ''}`}>
           {label}
           {required && <span className="text-red-500 mr-1">*</span>}
         </label>
@@ -97,7 +97,7 @@ export function Select({
         type="button"
         onClick={() => !disabled && setOpen(!open)}
         disabled={disabled}
-        className={`w-full ${sizes[size]} rounded-md ring ring-gray-300 bg-white flex items-center justify-between hover:ring-2 hover:ring-teal-500 transition-all duration-150 ${label ? "mt-1" : ""} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${error ? 'ring-red-500' : ''} ${open ? 'ring-2 ring-teal-500' : ''}`}
+        className={`w-full ${sizes[size]} rounded-md ring ring-gray-300 bg-white flex items-center justify-between hover:ring-2 hover:ring-teal-500 transition-all duration-150 ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${error ? 'ring-red-500' : ''} ${open ? 'ring-2 ring-teal-500' : ''}`}
       >
         <span className={`${selected ? "text-gray-900" : "text-gray-500"} ${disabled ? 'text-gray-400' : ''}`}>
           {selected ? selected.label : placeholder}

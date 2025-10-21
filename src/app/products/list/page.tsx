@@ -11,7 +11,7 @@ import { AddButton } from "@/components/ui/Button";
 const mockProducts = [
   {
     id: "1",
-    name: "قالین کاشان دست‌باف",
+    name: "قالین افغانی دست‌باف",
     code: "CAR001",
     type: "handmade",
     size: "3x4",
@@ -24,7 +24,7 @@ const mockProducts = [
   },
   {
     id: "2",
-    name: "قالین تبریز ماشینی",
+    name: "قالین ایرانی ماشینی",
     code: "CAR002",
     type: "machine",
     size: "4x6",
@@ -37,7 +37,7 @@ const mockProducts = [
   },
   {
     id: "3",
-    name: "گبه اصیل قشقایی",
+    name: "گبه اصیل افغانی",
     code: "CAR003",
     type: "gabbeh",
     size: "2x3",
