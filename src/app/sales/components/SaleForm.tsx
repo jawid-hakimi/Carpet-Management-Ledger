@@ -8,10 +8,11 @@ import { Textarea } from "@/components/ui/Textarea";
 import { SaveButton, CancelButton } from "@/components/ui/Button";
 import { ProductSelection } from "./ProductSelection";
 import { CustomerInfo } from "./CustomerInfo";
-import { 
-  Package, 
-  User, 
-  DollarSign 
+import { InvoiceSummary } from "./InvoiceSummary";
+import {
+  Package,
+  User,
+  DollarSign
 } from "lucide-react";
 
 interface SaleFormProps {
@@ -19,26 +20,37 @@ interface SaleFormProps {
   onCancel: () => void;
 }
 
+interface SaleProduct {
+  id: string;
+  productId: string;
+  name: string;
+  quantity: number;
+  salePrice: number;
+  purchasePrice: number;
+  stock: number;
+  size: string;
+  color: string;
+  quality: string;
+  material: string;
+  code: string;
+}
+
 const paymentMethods = [
-  { value: "cash", label: "نقدی" },
-  { value: "card", label: "کارت به کارت" },
-  { value: "check", label: "چک" },
-  { value: "installment", label: "اقساط" },
+  { value: "نقدی", label: "نقدی" },
+  { value: "انتقال بانکی", label: "انتقال بانکی" },
+  { value: "موبایل‌مانی", label: "موبایل‌مانی (M-Paisa / Azizi Pay)" },
+  { value: "حواله", label: "حواله" },
 ];
 
+
 const deliveryMethods = [
-  { value: "pickup", label: "تحویل در فروشگاه" },
-  { value: "delivery", label: "ارسال به آدرس" },
+  { value: "تحویل در شرکت", label: "تحویل در فروشگاه" },
+  { value: "ارسال به آدرس", label: "ارسال به آدرس" },
 ];
 
 export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
+  const [saleProducts, setSaleProducts] = useState<SaleProduct[]>([]);
   const [formData, setFormData] = useState({
-    productId: "",
-    quantity: 1,
-    unitPrice: 0,
-    totalPrice: 0,
-    discount: 0,
-    finalPrice: 0,
     customerId: "",
     customerName: "",
     customerPhone: "",
@@ -49,21 +61,10 @@ export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
     saleDate: new Date().toISOString().split('T')[0],
   });
 
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
-
-  useEffect(() => {
-    if (selectedProduct && formData.quantity > 0) {
-      const total = selectedProduct.price * formData.quantity;
-      const final = total - formData.discount;
-      
-      setFormData(prev => ({
-        ...prev,
-        unitPrice: selectedProduct.price,
-        totalPrice: total,
-        finalPrice: final > 0 ? final : 0
-      }));
-    }
-  }, [selectedProduct, formData.quantity, formData.discount]);
+  // محاسبه قیمت نهایی بر اساس محصولات فروش
+  const finalPrice = saleProducts.reduce((total, product) => {
+    return total + (product.salePrice * product.quantity);
+  }, 0);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -71,10 +72,17 @@ export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (saleProducts.length === 0) {
+      alert("لطفاً حداقل یک محصول به فاکتور اضافه کنید");
+      return;
+    }
+
     onSubmit({
       ...formData,
-      product: selectedProduct,
-      invoiceNumber: Math.random().toString(36).substr(2, 9).toUpperCase()
+      products: saleProducts,
+      finalPrice: finalPrice,
+      invoiceNumber: `INV-${Date.now().toString(36).toUpperCase()}`
     });
   };
 
@@ -87,12 +95,10 @@ export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* انتخاب محصول */}
+      {/* انتخاب محصولات */}
       <ProductSelection
-        selectedProduct={selectedProduct}
-        onProductChange={setSelectedProduct}
-        quantity={formData.quantity}
-        onQuantityChange={(qty) => handleInputChange('quantity', qty)}
+        saleProducts={saleProducts}
+        onSaleProductsChange={setSaleProducts}
       />
 
       {/* اطلاعات مشتری */}
@@ -101,45 +107,14 @@ export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
         onFormDataChange={handleInputChange}
       />
 
-      {/* قیمت‌گذاری و پرداخت */}
+      {/* پرداخت و تحویل */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
           <DollarSign className="ml-2 w-5 h-5" />
-          قیمت‌گذاری و پرداخت
+          پرداخت و تحویل
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <InfoCard title="قیمت کل">
-            <div className="text-lg font-bold text-green-600">
-              {formData.totalPrice.toLocaleString()} تومان
-            </div>
-          </InfoCard>
-
-          <Input
-            label="تخفیف (تومان)"
-            type="number"
-            value={formData.discount}
-            onChange={(e) => handleInputChange('discount', parseInt(e.target.value) || 0)}
-            min="0"
-            max={formData.totalPrice}
-          />
-
-          <InfoCard title="مبلغ نهایی">
-            <div className="text-lg font-bold text-blue-600">
-              {formData.finalPrice.toLocaleString()} تومان
-            </div>
-          </InfoCard>
-
-          <Input
-            label="تاریخ فروش"
-            type="date"
-            value={formData.saleDate}
-            onChange={(e) => handleInputChange('saleDate', e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Select
             label="نحوه پرداخت"
             options={paymentMethods}
@@ -158,11 +133,21 @@ export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
             required
           />
         </div>
+
+        <div className="mt-4">
+          <Input
+            label="تاریخ فروش"
+            type="date"
+            value={formData.saleDate}
+            onChange={(e) => handleInputChange('saleDate', e.target.value)}
+            required
+          />
+        </div>
       </div>
 
       {/* توضیحات */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">توضیحات</h3>
+        <h3 className="font-semibold text-gray-900 mb-4">توضیحات</h3>
         <Textarea
           value={formData.notes}
           onChange={(value) => handleInputChange('notes', value)}
@@ -170,6 +155,20 @@ export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
           rows={3}
         />
       </div>
+
+      {/* خلاصه فاکتور */}
+      {saleProducts.length > 0 && (
+        <InvoiceSummary
+          saleProducts={saleProducts}
+          customerName={formData.customerName}
+          customerPhone={formData.customerPhone}
+          customerAddress={formData.customerAddress}
+          paymentMethod={formData.paymentMethod}
+          deliveryMethod={formData.deliveryMethod}
+          saleDate={formData.saleDate}
+          notes={formData.notes}
+        />
+      )}
 
       {/* دکمه‌های اقدام */}
       <div className="flex gap-4 justify-end pt-6 border-t border-gray-200">
@@ -180,7 +179,7 @@ export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
         <SaveButton
           size="md"
           type="submit"
-          disabled={!formData.productId || !formData.customerName}
+          disabled={saleProducts.length === 0 || !formData.customerName}
         >
           ثبت فروش و نمایش فاکتور
         </SaveButton>

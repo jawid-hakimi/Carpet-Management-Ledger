@@ -2,6 +2,7 @@
 "use client";
 
 import { Eye, Edit, Trash2, FileText } from "lucide-react";
+import { DataTable } from "@/components/ui/DataTable";
 
 interface Sale {
   id: string;
@@ -43,6 +44,68 @@ export function SalesList({ sales, onViewDetails, onEdit, onDelete }: SalesListP
     );
   };
 
+  const columns = [
+    {
+      key: "invoiceNumber",
+      label: "شماره فاکتور",
+      sortable: true
+    },
+    {
+      key: "customerName",
+      label: "مشتری",
+      sortable: true
+    },
+    {
+      key: "productName",
+      label: "محصول",
+      sortable: true
+    },
+    {
+      key: "quantity",
+      label: "تعداد",
+      sortable: true,
+      render: (value: number) => (
+        <div className="text-center">{value}</div>
+      )
+    },
+    {
+      key: "totalPrice",
+      label: "مبلغ",
+      sortable: true,
+      render: (value: number) => `${value.toLocaleString()} افغانی`
+    },
+    {
+      key: "saleDate",
+      label: "تاریخ",
+      sortable: true,
+      render: (value: string) => new Date(value).toLocaleDateString('fa-IR')
+    },
+    {
+      key: "status",
+      label: "وضعیت",
+      sortable: true,
+      render: (value: string) => getStatusBadge(value)
+    }
+  ];
+
+  const getActions = (sale: Sale) => [
+    {
+      label: "مشاهده",
+      icon: <Eye className="w-4 h-4" />,
+      onClick: () => onViewDetails(sale)
+    },
+    {
+      label: "ویرایش",
+      icon: <Edit className="w-4 h-4" />,
+      onClick: () => onEdit(sale)
+    },
+    {
+      label: "حذف",
+      icon: <Trash2 className="w-4 h-4" />,
+      onClick: () => onDelete(sale)
+    }
+  ];
+
   if (sales.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
@@ -54,89 +117,12 @@ export function SalesList({ sales, onViewDetails, onEdit, onDelete }: SalesListP
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                شماره فاکتور
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                مشتری
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                محصول
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                تعداد
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                مبلغ
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                تاریخ
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                وضعیت
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                اقدامات
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {sales.map((sale) => (
-              <tr key={sale.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {sale.invoiceNumber}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {sale.customerName}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {sale.productName}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                  {sale.quantity}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {sale.totalPrice.toLocaleString()} تومان
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(sale.saleDate).toLocaleDateString('fa-IR')}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {getStatusBadge(sale.status)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2 space-x-reverse">
-                  <button
-                    onClick={() => onViewDetails(sale)}
-                    className="text-blue-600 hover:text-blue-900 flex items-center"
-                  >
-                    <Eye className="w-4 h-4 ml-1" />
-                    مشاهده
-                  </button>
-                  <button
-                    onClick={() => onEdit(sale)}
-                    className="text-green-600 hover:text-green-900 flex items-center"
-                  >
-                    <Edit className="w-4 h-4 ml-1" />
-                    ویرایش
-                  </button>
-                  <button
-                    onClick={() => onDelete(sale)}
-                    className="text-red-600 hover:text-red-900 flex items-center"
-                  >
-                    <Trash2 className="w-4 h-4 ml-1" />
-                    حذف
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <DataTable
+      data={sales}
+      columns={columns}
+      title="لیست فروش‌ها"
+      searchable={true}
+      actions={getActions}
+    />
   );
 }

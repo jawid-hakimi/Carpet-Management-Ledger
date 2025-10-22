@@ -5,11 +5,14 @@ import { useState } from "react";
 import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { User } from "lucide-react";
+import { OutlineButton } from "@/components/ui/Button";
 
 const mockCustomers = [
-  { id: "1", name: "احمد محمدی", phone: "09123456789", address: "تهران، خیابان ولیعصر" },
-  { id: "2", name: "فاطمه کریمی", phone: "09129876543", address: "اصفهان، خیابان چهارباغ" },
-  { id: "3", name: "رضا حسینی", phone: "09121112233", address: "مشهد، بلوار وکیل‌آباد" },
+  { id: "1", name: "احمد حسینی", phone: "0793123456", address: "کابل، کارته سخی، شهرک عبدالرحمن خان" },
+  { id: "2", name: "مریم احمدزی", phone: "0700123456", address: "کابل، مکرویان، جاده میوند" },
+  { id: "3", name: "رحمان کریمی", phone: "0780987654", address: "کابل، دشت برچی، شهرک طلایی" },
+  { id: "4", name: "زهرا محمدی", phone: "0775123456", address: "کابل، شهر نو، چهار راهی انصاری" },
+  { id: "5", name: "جمیل احمدی", phone: "0744123456", address: "کابل، پل محمود، جاده قندهار" },
 ];
 
 interface CustomerInfoProps {
@@ -24,7 +27,7 @@ export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) 
   const handleCustomerSelect = (customerId: string) => {
     const customer = mockCustomers.find(c => c.id === customerId);
     setSelectedCustomer(customer);
-    
+
     if (customer) {
       onFormDataChange('customerId', customer.id);
       onFormDataChange('customerName', customer.name);
@@ -35,46 +38,46 @@ export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) 
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+      <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
         <User className="ml-2 w-5 h-5" />
-        اطلاعات مشتری
+        معلومات مشتری
       </h3>
 
       <div className="flex gap-4 mb-4">
-        <button
+        <OutlineButton
           type="button"
           onClick={() => setIsNewCustomer(false)}
-          className={`px-4 py-2 rounded-lg border ${
-            !isNewCustomer 
-              ? "bg-teal-500 text-white border-teal-500" 
-              : "bg-white border-gray-300"
-          }`}
+          className={`${!isNewCustomer
+            ? "bg-teal-500 text-white border-teal-500"
+            : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50 hover:text-gray-700"
+            }`}
         >
           مشتری موجود
-        </button>
-        <button
+        </OutlineButton>
+        <OutlineButton
           type="button"
           onClick={() => setIsNewCustomer(true)}
-          className={`px-4 py-2 rounded-lg border ${
-            isNewCustomer 
-              ? "bg-teal-500 text-white border-teal-500" 
-              : "bg-white border-gray-300"
-          }`}
+          className={`${isNewCustomer
+            ? "bg-teal-500 text-white border-teal-500"
+            : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50 hover:text-gray-700"
+            }`}
         >
           مشتری جدید
-        </button>
+        </OutlineButton>
       </div>
 
       {!isNewCustomer ? (
         <Select
           label="انتخاب مشتری"
-          options={mockCustomers.map(c => ({ 
-            value: c.id, 
-            label: `${c.name} - ${c.phone}` 
+          options={mockCustomers.map(c => ({
+            value: c.id,
+            label: `${c.name} - ${c.phone}`
           }))}
           value={selectedCustomer?.id || ""}
           onChange={handleCustomerSelect}
-          placeholder="جستجوی مشتری..."
+          placeholder="مشتری را انتخاب کنید"
+          searchable
+          clearable
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -90,7 +93,7 @@ export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) 
             label="شماره تماس"
             value={formData.customerPhone}
             onChange={(e) => onFormDataChange('customerPhone', e.target.value)}
-            placeholder="09xxxxxxxxx"
+            placeholder="07xxxxxxxx"
             required
           />
         </div>
@@ -104,6 +107,15 @@ export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) 
           placeholder="آدرس کامل"
         />
       </div>
+
+      {/* راهنمای شماره تماس */}
+      {isNewCustomer && (
+        <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+          <p className="text-sm text-blue-700">
+            <strong>راهنما:</strong> شماره تماس باید با 07 شروع شود (مثال: 0793123456)
+          </p>
+        </div>
+      )}
     </div>
   );
 }
