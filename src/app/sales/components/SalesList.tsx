@@ -47,7 +47,7 @@ export function SalesList({ sales, onViewDetails, onEdit, onDelete }: SalesListP
   const columns = [
     {
       key: "invoiceNumber",
-      label: "شماره فاکتور",
+      label: "شماره بل",
       sortable: true
     },
     {

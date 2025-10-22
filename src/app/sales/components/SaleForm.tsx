@@ -18,6 +18,7 @@ import {
 interface SaleFormProps {
   onSubmit: (data: any) => void;
   onCancel: () => void;
+  initialData?: any;
 }
 
 interface SaleProduct {
@@ -42,13 +43,12 @@ const paymentMethods = [
   { value: "حواله", label: "حواله" },
 ];
 
-
 const deliveryMethods = [
   { value: "تحویل در شرکت", label: "تحویل در فروشگاه" },
   { value: "ارسال به آدرس", label: "ارسال به آدرس" },
 ];
 
-export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
+export function SaleForm({ onSubmit, onCancel, initialData }: SaleFormProps) {
   const [saleProducts, setSaleProducts] = useState<SaleProduct[]>([]);
   const [formData, setFormData] = useState({
     customerId: "",
@@ -60,6 +60,41 @@ export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
     notes: "",
     saleDate: new Date().toISOString().split('T')[0],
   });
+
+  // بارگذاری initialData هنگام تغییر
+  useEffect(() => {
+    if (initialData) {
+      // پر کردن فرم با داده‌های قبلی
+      setFormData({
+        customerId: initialData.customerId || "",
+        customerName: initialData.customerName || "",
+        customerPhone: initialData.customerPhone || "",
+        customerAddress: initialData.customerAddress || "",
+        paymentMethod: initialData.paymentMethod || "",
+        deliveryMethod: initialData.deliveryMethod || "",
+        notes: initialData.notes || "",
+        saleDate: initialData.saleDate || new Date().toISOString().split('T')[0],
+      });
+
+      // پر کردن محصولات با داده‌های قبلی
+      if (initialData.products && Array.isArray(initialData.products)) {
+        setSaleProducts(initialData.products.map((product: any) => ({
+          id: product.id || `temp-${Date.now()}-${Math.random()}`,
+          productId: product.productId || product.id,
+          name: product.name || "",
+          quantity: product.quantity || 1,
+          salePrice: product.salePrice || 0,
+          purchasePrice: product.purchasePrice || 0,
+          stock: product.stock || 0,
+          size: product.size || "",
+          color: product.color || "",
+          quality: product.quality || "",
+          material: product.material || "",
+          code: product.code || "",
+        })));
+      }
+    }
+  }, [initialData]);
 
   // محاسبه قیمت نهایی بر اساس محصولات فروش
   const finalPrice = saleProducts.reduce((total, product) => {
@@ -74,7 +109,7 @@ export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
     e.preventDefault();
 
     if (saleProducts.length === 0) {
-      alert("لطفاً حداقل یک محصول به فاکتور اضافه کنید");
+      alert("لطفاً حداقل یک محصول به بل اضافه کنید");
       return;
     }
 
@@ -82,7 +117,7 @@ export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
       ...formData,
       products: saleProducts,
       finalPrice: finalPrice,
-      invoiceNumber: `INV-${Date.now().toString(36).toUpperCase()}`
+      invoiceNumber: initialData?.invoiceNumber || `INV-${Date.now().toString(36).toUpperCase()}`
     });
   };
 
@@ -156,7 +191,7 @@ export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
         />
       </div>
 
-      {/* خلاصه فاکتور */}
+      {/* خلاصه بل */}
       {saleProducts.length > 0 && (
         <InvoiceSummary
           saleProducts={saleProducts}
@@ -181,7 +216,7 @@ export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {
           type="submit"
           disabled={saleProducts.length === 0 || !formData.customerName}
         >
-          ثبت فروش و نمایش فاکتور
+          {initialData ? "به‌روزرسانی و نمایش بل" : "ثبت فروش و نمایش بل"}
         </SaveButton>
       </div>
     </form>

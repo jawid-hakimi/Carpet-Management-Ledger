@@ -63,7 +63,7 @@ export function InvoiceSummary({
 
     return (
         <div className="bg-white border border-gray-300 p-8 max-w-4xl mx-auto font-sans">
-            {/* هدر فاکتور */}
+            {/* هدر بل */}
             <div className="flex justify-between items-start mb-4 border-b border-gray-300 pb-2">
                 <div>
                     <img src="/images/logo/carpet-logo.png" alt="لگوی شرکت" className="w-16 h-16 object-contain" />

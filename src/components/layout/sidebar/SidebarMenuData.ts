@@ -2,8 +2,11 @@ import {
   LayoutDashboard,
   Package,
   ShoppingBag,
-  Users ,
+  Users,
   FileText,
+  PlusCircle,
+  List,
+  UserPlus
 } from 'lucide-react';
 
 export const sidebarMenu = [
@@ -16,28 +19,28 @@ export const sidebarMenu = [
     title: 'محصولات',
     icon: Package,
     submenu: [
-      { title: 'اضافه نمودن محصول', link: '/products/add' },
-      { title: 'لیست محصول', link: '/products/list' },
+      { title: 'اضافه نمودن محصول', icon: PlusCircle, link: '/products/add' },
+      { title: 'لیست محصول', icon: List, link: '/products/list' },
     ],
   },
   {
     title: 'فروشات',
     icon: ShoppingBag,
     submenu: [
-      { title: 'فروش مورد جدید', link: '/sales/create' },
-      { title: 'لیست فروشات', link: '/sales/list' },
+      { title: 'فروش مورد جدید', icon: PlusCircle, link: '/sales/create' },
+      { title: 'لیست فروشات', icon: List, link: '/sales/list' },
     ],
   },
   {
     title: 'کاربران',
-    icon: Users ,
+    icon: Users,
     submenu: [
-      { title: 'افزودن کاربر جدید', link: '/users/add' },
-      { title: 'لیست کاربران', link: '/users/list' },
+      { title: 'افزودن کاربر جدید', icon: UserPlus, link: '/users/add' },
+      { title: 'لیست کاربران', icon: List, link: '/users/list' },
     ],
   },
   {
-    title: 'گذارشات',
+    title: 'گزارشات',
     icon: FileText,
     link: '/reports',
   },

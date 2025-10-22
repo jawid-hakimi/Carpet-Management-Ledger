@@ -5,36 +5,51 @@ import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { SaleDetails } from "@/app/sales/components/SaleDetails";
 import { SaleActions } from "@/app/sales/components/SaleActions";
+import { InvoicePreview } from "@/app/sales/components/InvoicePreview";
 import { useParams, useRouter } from "next/navigation";
 
-// داده نمونه برای جزئیات فروش
+// داده نمونه منطبق با ساختار واقعی
 const mockSaleDetails = {
   id: "1",
   invoiceNumber: "INV-001",
-  customer: {
-    id: "1",
-    name: "احمد محمدی",
-    phone: "09123456789",
-    address: "تهران، خیابان ولیعصر، پلاک 123"
-  },
-  product: {
-    id: "1",
-    name: "قالین دستباف اصفهان 6 متری",
-    price: 25000000,
-    category: "قالین دستباف"
-  },
-  saleInfo: {
-    quantity: 1,
-    unitPrice: 25000000,
-    totalPrice: 25000000,
-    discount: 0,
-    finalPrice: 25000000,
-    paymentMethod: "نقدی",
-    deliveryMethod: "تحویل در فروشگاه",
-    saleDate: "2024-03-20",
-    status: "completed",
-    notes: "قالین با کیفیت عالی و رنگ‌بندی سنتی"
-  }
+  customerName: "احمد محمدی",
+  customerPhone: "0793123456",
+  customerAddress: "کابل، کارته سخی، شهرک عبدالرحمن خان",
+  saleDate: "2024-03-20",
+  paymentMethod: "نقدی",
+  deliveryMethod: "تحویل در فروشگاه",
+  notes: "قالین با کیفیت عالی و رنگ‌بندی سنتی",
+  finalPrice: 25000000,
+  products: [
+    {
+      id: "1",
+      productId: "prod-1",
+      name: "قالین دستباف اصفهان 6 متری",
+      quantity: 1,
+      salePrice: 25000000,
+      purchasePrice: 20000000,
+      stock: 5,
+      size: "6x4 متر",
+      color: "قرمز و آبی",
+      quality: "درجه یک",
+      material: "پشم مرینوس",
+      code: "CARP-001"
+    },
+    {
+      id: "2", 
+      productId: "prod-2",
+      name: "قالین ماشینی ترک 4 متری",
+      quantity: 2,
+      salePrice: 8000000,
+      purchasePrice: 6000000,
+      stock: 10,
+      size: "4x3 متر",
+      color: "کرم",
+      quality: "درجه دو",
+      material: "اکریلیک",
+      code: "CARP-002"
+    }
+  ]
 };
 
 export default function SaleDetailsPage() {
@@ -49,10 +64,16 @@ export default function SaleDetailsPage() {
     // شبیه‌سازی دریافت داده از API
     const fetchSaleDetails = async () => {
       setIsLoading(true);
-      setTimeout(() => {
-        setSaleData(mockSaleDetails);
+      try {
+        // در حالت واقعی، اینجا API call می‌زنید
+        setTimeout(() => {
+          setSaleData(mockSaleDetails);
+          setIsLoading(false);
+        }, 1000);
+      } catch (error) {
+        console.error("Error fetching sale details:", error);
         setIsLoading(false);
-      }, 1000);
+      }
     };
 
     fetchSaleDetails();
@@ -63,9 +84,9 @@ export default function SaleDetailsPage() {
   };
 
   const handleDelete = () => {
-    if (confirm("آیا از حذف این فاکتور مطمئن هستید؟")) {
+    if (confirm("آیا از حذف این بل مطمئن هستید؟")) {
       console.log("Deleting sale:", saleId);
-      alert("فاکتور با موفقیت حذف شد!");
+      alert("بل با موفقیت حذف شد!");
       router.push("/sales");
     }
   };
@@ -99,10 +120,10 @@ export default function SaleDetailsPage() {
         <PageHeader
           title="جزئیات فروش"
           showHomeIcon={true}
-          description="فاکتور یافت نشد"
+          description="بل یافت نشد"
         />
         <div className="text-center py-12">
-          <p className="text-gray-500">فاکتور مورد نظر یافت نشد.</p>
+          <p className="text-gray-500">بل مورد نظر یافت نشد.</p>
         </div>
       </div>
     );
@@ -113,7 +134,7 @@ export default function SaleDetailsPage() {
       <PageHeader
         title="جزئیات فروش"
         showHomeIcon={true}
-        description={`شماره فاکتور: ${saleData.invoiceNumber}`}
+        description={`شماره بل: ${saleData.invoiceNumber}`}
       />
 
       <div className="space-y-6">
@@ -121,10 +142,21 @@ export default function SaleDetailsPage() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           onPrint={handlePrintInvoice}
-          saleStatus={saleData.saleInfo.status}
+          saleStatus="completed"
         />
         
-        <SaleDetails saleData={saleData} />
+        {/* نمایش جزئیات فروش در حالت عادی */}
+        <div className="no-print">
+          <SaleDetails saleData={saleData} />
+        </div>
+
+        {/* نمایش InvoicePreview فقط در حالت چاپ */}
+        <div className="hidden print:block">
+          <InvoicePreview 
+            saleData={saleData}
+            onBack={() => {}} // تابع خالی چون در حالت چاپ نیازی نیست
+          />
+        </div>
       </div>
     </div>
   );

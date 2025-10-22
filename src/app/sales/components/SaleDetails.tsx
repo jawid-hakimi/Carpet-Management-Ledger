@@ -18,6 +18,33 @@ interface SaleDetailsProps {
 }
 
 export function SaleDetails({ saleData }: SaleDetailsProps) {
+  // اگر saleData ساختار قدیمی دارد، آن را به ساختار جدید تبدیل کنیم
+  const normalizedData = saleData.customer ? saleData : {
+    customer: {
+      name: saleData.customerName,
+      phone: saleData.customerPhone,
+      address: saleData.customerAddress
+    },
+    product: saleData.products && saleData.products.length > 0 ? {
+      name: saleData.products[0].name,
+      category: "قالین",
+      price: saleData.products[0].salePrice
+    } : { name: "", category: "", price: 0 },
+    saleInfo: {
+      quantity: saleData.products ? saleData.products.reduce((total: number, p: any) => total + p.quantity, 0) : 0,
+      totalPrice: saleData.finalPrice || 0,
+      discount: 0,
+      finalPrice: saleData.finalPrice || 0,
+      paymentMethod: saleData.paymentMethod,
+      deliveryMethod: saleData.deliveryMethod,
+      saleDate: saleData.saleDate,
+      notes: saleData.notes,
+      unitPrice: saleData.products && saleData.products.length > 0 ? saleData.products[0].salePrice : 0
+    },
+    invoiceNumber: saleData.invoiceNumber,
+    products: saleData.products || []
+  };
+
   const InfoCard = ({ title, children, icon: Icon }: { 
     title: string; 
     children: React.ReactNode;
@@ -32,12 +59,14 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
     </div>
   );
 
-  const InfoRow = ({ label, value }: { label: string; value: string | number }) => (
-    <div className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
-      <span className="text-sm text-gray-600">{label}:</span>
-      <span className="text-sm font-medium">{value}</span>
-    </div>
-  );
+  const formatPrice = (price: number) => {
+    return price.toLocaleString('fa-IR') + " افغانی";
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fa-IR');
+  };
 
   return (
     <div className="space-y-6">
@@ -51,55 +80,59 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <InfoCard title="نام مشتری" icon={User}>
             <div className="text-lg font-medium">
-              {saleData.customer.name}
+              {normalizedData.customer.name}
             </div>
           </InfoCard>
 
           <InfoCard title="شماره تماس" icon={Phone}>
             <div className="text-lg font-medium text-blue-600">
-              {saleData.customer.phone}
+              {normalizedData.customer.phone}
             </div>
           </InfoCard>
 
           <InfoCard title="آدرس" icon={MapPin}>
             <div className="text-sm leading-relaxed">
-              {saleData.customer.address}
+              {normalizedData.customer.address}
             </div>
           </InfoCard>
         </div>
       </div>
 
-      {/* اطلاعات محصول */}
+      {/* اطلاعات محصولات */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Package className="ml-2 w-5 h-5" />
-          اطلاعات محصول
+          اطلاعات محصولات ({normalizedData.products.length} محصول)
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <InfoCard title="نام محصول" icon={Package}>
-            <div className="font-medium">
-              {saleData.product.name}
+        <div className="space-y-4">
+          {normalizedData.products.map((product: any, index: number) => (
+            <div key={product.id || index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                  <h4 className="font-medium text-gray-900">{product.name}</h4>
+                  <p className="text-sm text-gray-600">کد: {product.code}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">اندازه: {product.size}</p>
+                  <p className="text-sm text-gray-600">رنگ: {product.color}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">کیفیت: {product.quality}</p>
+                  <p className="text-sm text-gray-600">جنس: {product.material}</p>
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-medium">تعداد: {product.quantity}</p>
+                  <p className="text-sm font-medium text-green-600">
+                    قیمت: {formatPrice(product.salePrice)}
+                  </p>
+                  <p className="text-sm font-bold">
+                    جمع: {formatPrice(product.salePrice * product.quantity)}
+                  </p>
+                </div>
+              </div>
             </div>
-          </InfoCard>
-
-          <InfoCard title="دسته‌بندی" icon={Package}>
-            <div className="font-medium">
-              {saleData.product.category}
-            </div>
-          </InfoCard>
-
-          <InfoCard title="قیمت واحد" icon={DollarSign}>
-            <div className="font-medium text-green-600">
-              {saleData.product.price.toLocaleString()} تومان
-            </div>
-          </InfoCard>
-
-          <InfoCard title="تعداد" icon={Package}>
-            <div className="font-medium text-blue-600">
-              {saleData.saleInfo.quantity} عدد
-            </div>
-          </InfoCard>
+          ))}
         </div>
       </div>
 
@@ -110,28 +143,22 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
           اطلاعات مالی
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <InfoCard title="مبلغ کل">
+        <div className="grid grid-cols-3 gap-4">
+          <InfoCard title="تعداد کل محصولات">
             <div className="text-lg font-bold text-gray-900">
-              {saleData.saleInfo.totalPrice.toLocaleString()} تومان
-            </div>
-          </InfoCard>
-
-          <InfoCard title="تخفیف">
-            <div className="text-lg font-bold text-orange-600">
-              {saleData.saleInfo.discount.toLocaleString()} تومان
+              {normalizedData.saleInfo.quantity} عدد
             </div>
           </InfoCard>
 
           <InfoCard title="مبلغ نهایی">
             <div className="text-lg font-bold text-green-600">
-              {saleData.saleInfo.finalPrice.toLocaleString()} تومان
+              {formatPrice(normalizedData.saleInfo.finalPrice)}
             </div>
           </InfoCard>
 
           <InfoCard title="تاریخ فروش" icon={Calendar}>
             <div className="font-medium">
-              {new Date(saleData.saleInfo.saleDate).toLocaleDateString('fa-IR')}
+              {formatDate(normalizedData.saleInfo.saleDate)}
             </div>
           </InfoCard>
         </div>
@@ -151,7 +178,7 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
                 <CreditCard className="ml-2 w-4 h-4 text-gray-500" />
                 <span className="text-sm text-gray-600">نحوه پرداخت:</span>
               </div>
-              <span className="font-medium">{saleData.saleInfo.paymentMethod}</span>
+              <span className="font-medium">{normalizedData.saleInfo.paymentMethod}</span>
             </div>
 
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -159,34 +186,34 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
                 <Truck className="ml-2 w-4 h-4 text-gray-500" />
                 <span className="text-sm text-gray-600">نحوه تحویل:</span>
               </div>
-              <span className="font-medium">{saleData.saleInfo.deliveryMethod}</span>
+              <span className="font-medium">{normalizedData.saleInfo.deliveryMethod}</span>
             </div>
           </div>
 
-          {saleData.saleInfo.notes && (
+          {normalizedData.saleInfo.notes && (
             <div className="bg-gray-50 rounded-lg p-4">
               <h4 className="text-sm font-medium text-gray-500 mb-2">توضیحات:</h4>
               <p className="text-gray-700 text-sm leading-relaxed">
-                {saleData.saleInfo.notes}
+                {normalizedData.saleInfo.notes}
               </p>
             </div>
           )}
         </div>
       </div>
 
-      {/* خلاصه فاکتور برای چاپ */}
+      {/* خلاصه بل برای چاپ */}
       <div className="bg-white p-6 rounded-lg border-2 border-gray-300 hidden print:block">
         <div className="text-center mb-6">
-          <h2 className="text-xl font-bold">فاکتور فروش</h2>
-          <p className="text-gray-600">شماره: {saleData.invoiceNumber}</p>
+          <h2 className="text-xl font-bold">بل فروش</h2>
+          <p className="text-gray-600">شماره: {normalizedData.invoiceNumber}</p>
         </div>
         
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <strong>مشتری:</strong> {saleData.customer.name}
+            <strong>مشتری:</strong> {normalizedData.customer.name}
           </div>
           <div>
-            <strong>تلفن:</strong> {saleData.customer.phone}
+            <strong>تلفن:</strong> {normalizedData.customer.phone}
           </div>
         </div>
         
@@ -200,17 +227,19 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="border border-gray-300 p-2">{saleData.product.name}</td>
-              <td className="border border-gray-300 p-2 text-center">{saleData.saleInfo.quantity}</td>
-              <td className="border border-gray-300 p-2">{saleData.saleInfo.unitPrice.toLocaleString()}</td>
-              <td className="border border-gray-300 p-2">{saleData.saleInfo.totalPrice.toLocaleString()}</td>
-            </tr>
+            {normalizedData.products.map((product: any, index: number) => (
+              <tr key={product.id || index}>
+                <td className="border border-gray-300 p-2">{product.name}</td>
+                <td className="border border-gray-300 p-2 text-center">{product.quantity}</td>
+                <td className="border border-gray-300 p-2">{formatPrice(product.salePrice)}</td>
+                <td className="border border-gray-300 p-2">{formatPrice(product.salePrice * product.quantity)}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
         
         <div className="text-right">
-          <p><strong>مبلغ نهایی:</strong> {saleData.saleInfo.finalPrice.toLocaleString()} تومان</p>
+          <p><strong>مبلغ نهایی:</strong> {formatPrice(normalizedData.saleInfo.finalPrice)}</p>
         </div>
       </div>
     </div>
