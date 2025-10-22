@@ -283,7 +283,7 @@ export function ProductSelection({
             ))}
           </div>
 
-          {/* جمع کل فاکتور */}
+          {/* جمع کل بل */}
           <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
             <div className="flex justify-between items-center">
               <span className="text-base font-semibold text-blue-900">مجموع کل اجناس:</span>

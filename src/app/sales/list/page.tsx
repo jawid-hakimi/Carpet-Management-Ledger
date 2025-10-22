@@ -61,7 +61,7 @@ export default function SalesPage() {
   };
 
   const handleDelete = (sale: any) => {
-    if (confirm(`آیا از حذف فاکتور ${sale.invoiceNumber} مطمئن هستید؟`)) {
+    if (confirm(`آیا از حذف بل ${sale.invoiceNumber} مطمئن هستید؟`)) {
       console.log("Delete sale:", sale);
     }
   };

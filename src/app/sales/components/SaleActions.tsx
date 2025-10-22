@@ -51,7 +51,7 @@ export function SaleActions({ onEdit, onDelete, onPrint, saleStatus }: SaleActio
     <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
-          <span className="text-sm font-medium text-gray-700">وضعیت فاکتور:</span>
+          <span className="text-sm font-medium text-gray-700">وضعیت بل:</span>
           {getStatusInfo(saleStatus)}
         </div>
 
@@ -60,7 +60,7 @@ export function SaleActions({ onEdit, onDelete, onPrint, saleStatus }: SaleActio
             size="md"
             onClick={onPrint}
           >
-            چاپ فاکتور
+            چاپ بل
           </PrintButton>
           
           {saleStatus !== 'cancelled' && (
@@ -68,16 +68,16 @@ export function SaleActions({ onEdit, onDelete, onPrint, saleStatus }: SaleActio
               size="md"
               onClick={onEdit}
             >
-              ویرایش فاکتور
+              ویرایش بل
             </EditButton>
           )}
           
           <DeleteButton
             size="md"
             onClick={onDelete}
-            variant="outline"
+            variant="destructive"
           >
-            حذف فاکتور
+            حذف بل
           </DeleteButton>
         </div>
       </div>

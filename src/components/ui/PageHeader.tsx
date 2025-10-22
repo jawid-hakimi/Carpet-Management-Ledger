@@ -46,14 +46,14 @@ export function PageHeader({
             <div className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-br from-teal-200 to-cyan-200 rounded-full opacity-60 blur-xl"></div>
             <div className="absolute -bottom-4 -right-4 w-16 h-16 bg-gradient-to-tr from-teal-200 to-cyan-200 rounded-full opacity-40 blur-lg"></div>
 
-            <div className="relative flex items-center gap-4">
+            <div className="relative flex items-center gap-2 md:gap-4">
                 {/* Navigation buttons */}
                 <div className="flex items-center gap-2">
                     {showBackButton && (
                         <button
                             onClick={handleBack}
                             disabled={isBackDisabled}
-                            className="group flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 hover:border-teal-300 hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:scale-100"
+                            className="group flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-md md:rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 hover:border-teal-300 hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:scale-100"
                             title={isBackDisabled ? "امکان بازگشت وجود ندارد" : "بازگشت"}
                         >
                             <ArrowRight
@@ -66,7 +66,7 @@ export function PageHeader({
                     {showHomeIcon && (
                         <button
                             onClick={handleHome}
-                            className="group flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 hover:border-teal-300 hover:scale-105"
+                            className="group flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-md md:rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 hover:border-teal-300 hover:scale-105"
                             title="صفحه اصلی"
                         >
                             <Home
@@ -80,15 +80,15 @@ export function PageHeader({
 
                 {/* Title section */}
                 <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                        <div className="w-1.5 h-8 bg-gradient-to-b from-teal-500 to-cyan-500 rounded-full"></div>
-                        <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <div className="w-1 md:w-1.5 h-6 md:h-8 bg-gradient-to-b from-teal-500 to-cyan-500 rounded-full"></div>
+                        <h1 className="text-base md:text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                             {title}
                         </h1>
                     </div>
 
                     {description && (
-                        <p className="text-gray-600 text-sm pr-4 leading-relaxed">
+                        <p className="text-gray-600 text-xs md:text-sm pr-4 leading-relaxed">
                             {description}
                         </p>
                     )}

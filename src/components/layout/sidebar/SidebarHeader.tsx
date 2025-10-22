@@ -34,13 +34,13 @@ const SidebarHeader = ({ collapsed, onToggle }: SidebarHeaderProps) => {
       <button
         onClick={onToggle}
         className={clsx(
-          'p-1 rounded-md bg-teal-500 text-white hover:bg-teal-600 hover:cursor-pointer transition-all duration-300 absolute ',
+          'p-1 rounded-md bg-teal-500 text-white hover:bg-teal-600 hover:cursor-pointer transition-all duration-300 absolute',
           collapsed
-            ? '-left-8 top-1/2 -translate-y-1/2 shadow-lg' // دکمه در بیرون نمایش داده شود
+            ? '-left-8 top-24 -translate-y-1/2 shadow-lg' // دکمه در بیرون نمایش داده شود
             : 'left-4 top-1/2 -translate-y-1/2'
         )}
       >
-        {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+        {collapsed ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
       </button>
     </div>
   );

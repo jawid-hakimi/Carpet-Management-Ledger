@@ -1,7 +1,7 @@
 // src/components/sales/CustomerInfo.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { User } from "lucide-react";
@@ -24,6 +24,24 @@ export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) 
   const [isNewCustomer, setIsNewCustomer] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
 
+  // همگام‌سازی stateها با formData
+  useEffect(() => {
+    if (formData.customerId && formData.customerName) {
+      // اگر مشتری از قبل انتخاب شده
+      const customer = mockCustomers.find(c => c.id === formData.customerId);
+      if (customer) {
+        setSelectedCustomer(customer);
+        setIsNewCustomer(false);
+      } else {
+        // اگر مشتری جدید است
+        setIsNewCustomer(true);
+      }
+    } else if (formData.customerName) {
+      // اگر نام مشتری پر شده اما customerId ندارد (مشتری جدید)
+      setIsNewCustomer(true);
+    }
+  }, [formData]);
+
   const handleCustomerSelect = (customerId: string) => {
     const customer = mockCustomers.find(c => c.id === customerId);
     setSelectedCustomer(customer);
@@ -33,7 +51,60 @@ export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) 
       onFormDataChange('customerName', customer.name);
       onFormDataChange('customerPhone', customer.phone);
       onFormDataChange('customerAddress', customer.address);
+    } else {
+      // اگر مشتری پاک شد
+      onFormDataChange('customerId', "");
+      onFormDataChange('customerName', "");
+      onFormDataChange('customerPhone', "");
+      onFormDataChange('customerAddress', "");
     }
+  };
+
+  const handleNewCustomerToggle = (isNew: boolean) => {
+    setIsNewCustomer(isNew);
+    
+    if (isNew) {
+      // وقتی به حالت مشتری جدید می‌رویم، customerId را پاک می‌کنیم
+      onFormDataChange('customerId', "");
+      setSelectedCustomer(null);
+    } else {
+      // وقتی به حالت مشتری موجود می‌رویم، فرم را پاک می‌کنیم
+      onFormDataChange('customerName', "");
+      onFormDataChange('customerPhone', "");
+      onFormDataChange('customerAddress', "");
+    }
+  };
+
+  // بررسی اینکه آیا مشتری فعلی در لیست mockCustomers وجود دارد
+  const getCurrentCustomerOption = () => {
+    if (formData.customerId && formData.customerName) {
+      const existingCustomer = mockCustomers.find(c => c.id === formData.customerId);
+      if (existingCustomer) {
+        return existingCustomer.id;
+      }
+      
+      // اگر مشتری در لیست نیست اما داده دارد، یک گزینه موقت ایجاد می‌کنیم
+      return formData.customerId;
+    }
+    return "";
+  };
+
+  // ایجاد لیست گزینه‌ها شامل مشتری فعلی اگر در لیست نیست
+  const getCustomerOptions = () => {
+    const options = mockCustomers.map(c => ({
+      value: c.id,
+      label: `${c.name} - ${c.phone}`
+    }));
+
+    // اگر مشتری فعلی در لیست mockCustomers نیست اما داده دارد، آن را اضافه می‌کنیم
+    if (formData.customerId && formData.customerName && !mockCustomers.find(c => c.id === formData.customerId)) {
+      options.unshift({
+        value: formData.customerId,
+        label: `${formData.customerName} - ${formData.customerPhone} (موقت)`
+      });
+    }
+
+    return options;
   };
 
   return (
@@ -46,7 +117,7 @@ export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) 
       <div className="flex gap-4 mb-4">
         <OutlineButton
           type="button"
-          onClick={() => setIsNewCustomer(false)}
+          onClick={() => handleNewCustomerToggle(false)}
           className={`${!isNewCustomer
             ? "bg-teal-500 text-white border-teal-500"
             : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50 hover:text-gray-700"
@@ -56,7 +127,7 @@ export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) 
         </OutlineButton>
         <OutlineButton
           type="button"
-          onClick={() => setIsNewCustomer(true)}
+          onClick={() => handleNewCustomerToggle(true)}
           className={`${isNewCustomer
             ? "bg-teal-500 text-white border-teal-500"
             : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50 hover:text-gray-700"
@@ -69,11 +140,8 @@ export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) 
       {!isNewCustomer ? (
         <Select
           label="انتخاب مشتری"
-          options={mockCustomers.map(c => ({
-            value: c.id,
-            label: `${c.name} - ${c.phone}`
-          }))}
-          value={selectedCustomer?.id || ""}
+          options={getCustomerOptions()}
+          value={getCurrentCustomerOption()}
           onChange={handleCustomerSelect}
           placeholder="مشتری را انتخاب کنید"
           searchable
@@ -107,6 +175,16 @@ export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) 
           placeholder="آدرس کامل"
         />
       </div>
+
+      {/* نمایش اطلاعات مشتری انتخاب شده */}
+      {!isNewCustomer && selectedCustomer && (
+        <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
+          <p className="text-sm text-green-700">
+            <strong>مشتری انتخاب شده:</strong> {selectedCustomer.name} - {selectedCustomer.phone}
+          </p>
+          <p className="text-sm text-green-600 mt-1">{selectedCustomer.address}</p>
+        </div>
+      )}
 
       {/* راهنمای شماره تماس */}
       {isNewCustomer && (

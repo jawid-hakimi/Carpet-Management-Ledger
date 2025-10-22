@@ -1,13 +1,17 @@
+// components/layout/sidebar/Sidebar.tsx
 'use client';
-import { useState } from 'react';
 import clsx from 'clsx';
 import SidebarHeader from './SidebarHeader';
 import SidebarFooter from './SidebarFooter';
 import SidebarItem from './SidebarItem';
 import { sidebarMenu } from './SidebarMenuData';
 
-const Sidebar = () => {
-  const [collapsed, setCollapsed] = useState(false);
+interface SidebarProps {
+  collapsed: boolean;
+  setCollapsed: (v: boolean) => void;
+}
+
+const Sidebar = ({ collapsed, setCollapsed }: SidebarProps) => {
   const toggleCollapse = () => setCollapsed(!collapsed);
 
   return (
