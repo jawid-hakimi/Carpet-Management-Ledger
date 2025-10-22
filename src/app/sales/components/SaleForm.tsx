@@ -36,16 +36,16 @@ interface SaleProduct {
 }
 
 const paymentMethods = [
-  { value: "cash", label: "نقدی" },
-  { value: "bank", label: "انتقال بانکی" },
-  { value: "mobile", label: "موبایل‌مانی (M-Paisa / Azizi Pay)" },
-  { value: "hawala", label: "حواله" },
+  { value: "نقدی", label: "نقدی" },
+  { value: "انتقال بانکی", label: "انتقال بانکی" },
+  { value: "موبایل‌مانی", label: "موبایل‌مانی (M-Paisa / Azizi Pay)" },
+  { value: "حواله", label: "حواله" },
 ];
 
 
 const deliveryMethods = [
-  { value: "pickup", label: "تحویل در فروشگاه" },
-  { value: "delivery", label: "ارسال به آدرس" },
+  { value: "تحویل در شرکت", label: "تحویل در فروشگاه" },
+  { value: "ارسال به آدرس", label: "ارسال به آدرس" },
 ];
 
 export function SaleForm({ onSubmit, onCancel }: SaleFormProps) {

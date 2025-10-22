@@ -4,7 +4,6 @@
 import { useState } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { SalesList } from "../components/SalesList";
-import { SalesFilter } from "../components/SalesFilter";
 import { useRouter } from "next/navigation";
 
 const mockSales = [
@@ -54,7 +53,7 @@ export default function SalesPage() {
   });
 
   const handleViewDetails = (sale: any) => {
-    router.push(`/sales/${sale.id}`);
+    router.push(`/sales/${sale.id}/details`);
   };
 
   const handleEdit = (sale: any) => {
@@ -108,19 +107,13 @@ export default function SalesPage() {
         description="مدیریت و مشاهده تمام فروشات انجام شده"
       />
 
-      <div className="space-y-6">
-        <SalesFilter 
-          filters={filters}
-          onFilterChange={handleFilterChange}
-        />
-        
+      
         <SalesList
           sales={filteredSales}
           onViewDetails={handleViewDetails}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
-      </div>
     </div>
   );
 }
