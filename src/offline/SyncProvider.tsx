@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useSyncQueue } from "@/offline/hooks/useSyncQueue";
 
 export function SyncProvider() {
+  // فقط فراخوانی hook - هشدار برطرف می‌شود
   useSyncQueue();
 
   useEffect(() => {
@@ -31,7 +32,6 @@ export function SyncProvider() {
 
       registerSW();
 
-      // ✅ رفع ارور TypeScript
       window.addEventListener("online", async () => {
         console.log("🌐 Back online, triggering sync...");
         const reg = await navigator.serviceWorker.ready;

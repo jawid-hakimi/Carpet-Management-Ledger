@@ -1,3 +1,4 @@
+// src/offline/apiClient.ts
 import { addToQueue } from "./Queue";
 
 export async function apiFetch(url: string, options: RequestInit = {}) {
@@ -10,11 +11,23 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
       return res.json();
     } catch (err) {
       console.warn("⚠️ Network issue, queuing request:", url);
-      await addToQueue({ url, options });
+      // تبدیل options به فرمت سازگار با QueueRequest
+      await addToQueue({ 
+        url, 
+        method: options.method || 'GET',
+        data: options.body,
+        headers: options.headers as Record<string, string>
+      });
       return { offline: true };
     }
   } else {
-    await addToQueue({ url, options });
+    // تبدیل options به فرمت سازگار با QueueRequest
+    await addToQueue({ 
+      url, 
+      method: options.method || 'GET',
+      data: options.body,
+      headers: options.headers as Record<string, string>
+    });
     console.log("📦 Request queued (offline):", url);
     return { offline: true };
   }

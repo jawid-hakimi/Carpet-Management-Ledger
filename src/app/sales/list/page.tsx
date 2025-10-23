@@ -6,7 +6,20 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { SalesList } from "../components/SalesList";
 import { useRouter } from "next/navigation";
 
-const mockSales = [
+// تعریف تایپ برای داده‌های فروش در لیست
+interface SaleListItem {
+  id: string;
+  invoiceNumber: string;
+  customerName: string;
+  productName: string;
+  quantity: number;
+  totalPrice: number;
+  saleDate: string;
+  status: "completed" | "pending" | "cancelled";
+  paymentMethod: string;
+}
+
+const mockSales: SaleListItem[] = [
   {
     id: "1",
     invoiceNumber: "INV-001",
@@ -42,30 +55,38 @@ const mockSales = [
   }
 ];
 
+interface Filters {
+  customerName: string;
+  dateFrom: string;
+  dateTo: string;
+  status: string;
+}
+
 export default function SalesPage() {
   const router = useRouter();
-  const [filteredSales, setFilteredSales] = useState(mockSales);
-  const [filters, setFilters] = useState({
+  const [filteredSales, setFilteredSales] = useState<SaleListItem[]>(mockSales);
+  const [filters, setFilters] = useState<Filters>({
     customerName: "",
     dateFrom: "",
     dateTo: "",
     status: ""
   });
 
-  const handleViewDetails = (sale: any) => {
+  const handleViewDetails = (sale: SaleListItem) => {
     router.push(`/sales/${sale.id}/details`);
   };
 
-  const handleEdit = (sale: any) => {
+  const handleEdit = (sale: SaleListItem) => {
     router.push(`/sales/${sale.id}/edit`);
   };
 
-  const handleDelete = (sale: any) => {
+  const handleDelete = (sale: SaleListItem) => {
     if (confirm(`آیا از حذف بل ${sale.invoiceNumber} مطمئن هستید؟`)) {
       console.log("Delete sale:", sale);
+      // در اینجا می‌توانید API call برای حذف انجام دهید
+      setFilteredSales(prev => prev.filter(item => item.id !== sale.id));
     }
   };
-
 
   return (
     <div className="w-full">
@@ -75,13 +96,12 @@ export default function SalesPage() {
         description="مدیریت و مشاهده تمام فروشات انجام شده"
       />
 
-      
-        <SalesList
-          sales={filteredSales}
-          onViewDetails={handleViewDetails}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+      <SalesList
+        sales={filteredSales}
+        onViewDetails={handleViewDetails}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }

@@ -1,11 +1,30 @@
+// src/offline/Queue.ts
 import { getDB } from './db';
 
-export async function addToQueue(request: any) {
-  const db = await getDB();
-  await db.put('queue', { ...request, timestamp: Date.now() });
+// تعریف interface برای request
+interface QueueRequest {
+  url: string;
+  method: string;
+  data?: unknown;
+  headers?: Record<string, string>;
+  id?: string | number;
+  // سایر فیلدهای مورد نیاز
 }
 
-export async function getQueuedRequests() {
+interface QueuedItem extends QueueRequest {
+  timestamp: number;
+}
+
+export async function addToQueue(request: QueueRequest) {
+  const db = await getDB();
+  const item: QueuedItem = {
+    ...request,
+    timestamp: Date.now()
+  };
+  await db.put('queue', item);
+}
+
+export async function getQueuedRequests(): Promise<QueuedItem[]> {
   const db = await getDB();
   return db.getAll('queue');
 }

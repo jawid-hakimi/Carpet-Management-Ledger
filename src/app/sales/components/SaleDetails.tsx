@@ -12,57 +12,70 @@ import {
   Truck,
   FileText
 } from "lucide-react";
-import { SaleDataType } from "@/types/sales/sales";
+import { SaleDataType, ProductItemType, LegacySaleData, SaleData } from "@/types/sales/sales";
 
 interface SaleDetailsProps {
-  saleData: SaleDataType | any;
+  saleData: SaleData;
 }
 
-export function SaleDetails({ saleData }: SaleDetailsProps) {
-  // اگر saleData ساختار قدیمی دارد، آن را به ساختار جدید تبدیل کنیم
-  const normalizedData: SaleDataType = saleData.customer ? saleData : {
+interface InfoCardProps {
+  title: string;
+  children: React.ReactNode;
+  icon?: React.ComponentType<{ className?: string }>;
+}
+
+// تابع helper برای نرمالایز کردن داده‌ها
+const normalizeSaleData = (saleData: SaleData): SaleDataType => {
+  // اگر داده از نوع SaleDataType باشد (دارای customer object)
+  if ('customer' in saleData && saleData.customer) {
+    return saleData as SaleDataType;
+  }
+
+  // اگر داده از نوع قدیمی باشد
+  const legacyData = saleData as unknown as LegacySaleData;
+  return {
     customer: {
-      name: saleData.customerName,
-      phone: saleData.customerPhone,
-      address: saleData.customerAddress
+      name: legacyData.customerName,
+      phone: legacyData.customerPhone,
+      address: legacyData.customerAddress || ""
     },
-    products: saleData.products || [],
+    products: legacyData.products || [],
     saleInfo: {
-      quantity: saleData.products?.reduce((total: number, p: any) => total + p.quantity, 0) || 0,
-      totalPrice: saleData.finalPrice || 0,
+      quantity: legacyData.products?.reduce((total: number, product: ProductItemType) => total + product.quantity, 0) || 0,
+      totalPrice: legacyData.finalPrice || 0,
       discount: 0,
-      finalPrice: saleData.finalPrice || 0,
-      paymentMethod: saleData.paymentMethod,
-      deliveryMethod: saleData.deliveryMethod,
-      saleDate: saleData.saleDate,
-      notes: saleData.notes,
-      unitPrice: saleData.products && saleData.products.length > 0 ? saleData.products[0].salePrice : 0
+      finalPrice: legacyData.finalPrice || 0,
+      paymentMethod: legacyData.paymentMethod || "",
+      deliveryMethod: legacyData.deliveryMethod || "",
+      saleDate: legacyData.saleDate,
+      notes: legacyData.notes || "",
+      unitPrice: legacyData.products && legacyData.products.length > 0 ? legacyData.products[0].salePrice : 0
     },
-    invoiceNumber: saleData.invoiceNumber
+    invoiceNumber: legacyData.invoiceNumber
   };
+};
 
-  const InfoCard = ({ title, children, icon: Icon }: {
-    title: string;
-    children: React.ReactNode;
-    icon?: any;
-  }) => (
-    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-      <div className="flex items-center mb-3">
-        {Icon && <Icon className="ml-2 w-4 h-4 text-gray-500" />}
-        <h3 className="text-sm font-medium text-gray-500">{title}</h3>
-      </div>
-      <div className="text-gray-900">{children}</div>
+const InfoCard = ({ title, children, icon: Icon }: InfoCardProps) => (
+  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+    <div className="flex items-center mb-3">
+      {Icon && <Icon className="ml-2 w-4 h-4 text-gray-500" />}
+      <h3 className="text-sm font-medium text-gray-500">{title}</h3>
     </div>
-  );
+    <div className="text-gray-900">{children}</div>
+  </div>
+);
 
-  const formatPrice = (price: number) => {
-    return price.toLocaleString('fa-IR') + " افغانی";
-  };
+const formatPrice = (price: number): string => {
+  return price.toLocaleString('fa-IR') + " افغانی";
+};
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('fa-IR');
-  };
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('fa-IR');
+};
+
+export function SaleDetails({ saleData }: SaleDetailsProps) {
+  const normalizedData = normalizeSaleData(saleData);
 
   return (
     <div className="space-y-6">
@@ -88,7 +101,7 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
 
           <InfoCard title="آدرس" icon={MapPin}>
             <div className="text-sm leading-relaxed">
-              {normalizedData.customer.address}
+              {normalizedData.customer.address || "آدرس ثبت نشده"}
             </div>
           </InfoCard>
         </div>
@@ -102,20 +115,20 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
         </h3>
 
         <div className="space-y-4">
-          {normalizedData.products.map((product: any, index: number) => (
-            <div key={product.id || index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          {normalizedData.products.map((product, index) => (
+            <div key={product.id || `product-${index}`} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                   <h4 className="font-medium text-gray-900">{product.name}</h4>
-                  <p className="text-sm text-gray-600">کد: {product.code}</p>
+                  <p className="text-sm text-gray-600">کد: {product.code || "ندارد"}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">اندازه: {product.size}</p>
-                  <p className="text-sm text-gray-600">رنگ: {product.color}</p>
+                  <p className="text-sm text-gray-600">اندازه: {product.size || "ندارد"}</p>
+                  <p className="text-sm text-gray-600">رنگ: {product.color || "ندارد"}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">کیفیت: {product.quality}</p>
-                  <p className="text-sm text-gray-600">جنس: {product.material}</p>
+                  <p className="text-sm text-gray-600">کیفیت: {product.quality || "ندارد"}</p>
+                  <p className="text-sm text-gray-600">جنس: {product.material || "ندارد"}</p>
                 </div>
                 <div className="text-left">
                   <p className="text-sm font-medium">تعداد: {product.quantity}</p>
@@ -174,7 +187,7 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
                 <CreditCard className="ml-2 w-4 h-4 text-gray-500" />
                 <span className="text-sm text-gray-600">نحوه پرداخت:</span>
               </div>
-              <span className="font-medium">{normalizedData.saleInfo.paymentMethod}</span>
+              <span className="font-medium">{normalizedData.saleInfo.paymentMethod || "ثبت نشده"}</span>
             </div>
 
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -182,7 +195,7 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
                 <Truck className="ml-2 w-4 h-4 text-gray-500" />
                 <span className="text-sm text-gray-600">نحوه تحویل:</span>
               </div>
-              <span className="font-medium">{normalizedData.saleInfo.deliveryMethod}</span>
+              <span className="font-medium">{normalizedData.saleInfo.deliveryMethod || "ثبت نشده"}</span>
             </div>
           </div>
 
@@ -201,7 +214,7 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
       <div className="bg-white p-6 rounded-lg border-2 border-gray-300 hidden print:block">
         <div className="text-center mb-6">
           <h2 className="text-xl font-bold">بل فروش</h2>
-          <p className="text-gray-600">شماره: {normalizedData.invoiceNumber}</p>
+          <p className="text-gray-600">شماره: {normalizedData.invoiceNumber || "ندارد"}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-4">
@@ -223,8 +236,8 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
             </tr>
           </thead>
           <tbody>
-            {normalizedData.products.map((product: any, index: number) => (
-              <tr key={product.id || index}>
+            {normalizedData.products.map((product, index) => (
+              <tr key={product.id || `print-${index}`}>
                 <td className="border border-gray-300 p-2">{product.name}</td>
                 <td className="border border-gray-300 p-2 text-center">{product.quantity}</td>
                 <td className="border border-gray-300 p-2">{formatPrice(product.salePrice)}</td>

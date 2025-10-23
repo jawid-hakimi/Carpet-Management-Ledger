@@ -9,30 +9,14 @@ import { SaveButton, CancelButton } from "@/components/ui/Button";
 import { ProductSelection } from "./ProductSelection";
 import { CustomerInfo } from "./CustomerInfo";
 import { InvoiceSummary } from "./InvoiceSummary";
-import {
-  DollarSign
-} from "lucide-react";
-
-interface SaleFormProps {
-  onSubmit: (data: any) => void;
-  onCancel: () => void;
-  initialData?: any;
-}
-
-interface SaleProduct {
-  id: string;
-  productId: string;
-  name: string;
-  quantity: number;
-  salePrice: number;
-  purchasePrice: number;
-  stock: number;
-  size: string;
-  color: string;
-  quality: string;
-  material: string;
-  code: string;
-}
+import { DollarSign } from "lucide-react";
+import { 
+  SaleFormProps, 
+  SaleFormData, 
+  ProductItemType as SaleProduct, 
+  SaleSubmitData,
+  FormField 
+} from "@/types/sales/sales";
 
 const paymentMethods = [
   { value: "نقدی", label: "نقدی" },
@@ -46,9 +30,25 @@ const deliveryMethods = [
   { value: "ارسال به آدرس", label: "ارسال به آدرس" },
 ];
 
+// تابع helper برای ایجاد SaleProduct از داده‌های مختلف
+const createSaleProduct = (productData: Partial<SaleProduct>): SaleProduct => ({
+  id: productData.id || `temp-${Date.now()}-${Math.random()}`,
+  productId: productData.productId || productData.id || "",
+  name: productData.name || "",
+  quantity: productData.quantity || 1,
+  salePrice: productData.salePrice || 0,
+  purchasePrice: productData.purchasePrice || 0,
+  stock: productData.stock || 0,
+  size: productData.size || "",
+  color: productData.color || "",
+  quality: productData.quality || "",
+  material: productData.material || "",
+  code: productData.code || "",
+});
+
 export function SaleForm({ onSubmit, onCancel, initialData }: SaleFormProps) {
   const [saleProducts, setSaleProducts] = useState<SaleProduct[]>([]);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<SaleFormData>({
     customerId: "",
     customerName: "",
     customerPhone: "",
@@ -76,20 +76,10 @@ export function SaleForm({ onSubmit, onCancel, initialData }: SaleFormProps) {
 
       // پر کردن محصولات با داده‌های قبلی
       if (initialData.products && Array.isArray(initialData.products)) {
-        setSaleProducts(initialData.products.map((product: any) => ({
-          id: product.id || `temp-${Date.now()}-${Math.random()}`,
-          productId: product.productId || product.id,
-          name: product.name || "",
-          quantity: product.quantity || 1,
-          salePrice: product.salePrice || 0,
-          purchasePrice: product.purchasePrice || 0,
-          stock: product.stock || 0,
-          size: product.size || "",
-          color: product.color || "",
-          quality: product.quality || "",
-          material: product.material || "",
-          code: product.code || "",
-        })));
+        const normalizedProducts = initialData.products.map(product => 
+          createSaleProduct(product)
+        );
+        setSaleProducts(normalizedProducts);
       }
     }
   }, [initialData]);
@@ -99,7 +89,7 @@ export function SaleForm({ onSubmit, onCancel, initialData }: SaleFormProps) {
     return total + (product.salePrice * product.quantity);
   }, 0);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: FormField, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -111,20 +101,15 @@ export function SaleForm({ onSubmit, onCancel, initialData }: SaleFormProps) {
       return;
     }
 
-    onSubmit({
+    const submitData: SaleSubmitData = {
       ...formData,
       products: saleProducts,
       finalPrice: finalPrice,
       invoiceNumber: initialData?.invoiceNumber || `INV-${Date.now().toString(36).toUpperCase()}`
-    });
-  };
+    };
 
-  const InfoCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-      <h3 className="text-sm font-medium text-gray-500 mb-2">{title}</h3>
-      <div className="text-gray-900">{children}</div>
-    </div>
-  );
+    onSubmit(submitData);
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

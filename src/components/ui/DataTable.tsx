@@ -1,56 +1,72 @@
 // src/components/ui/DataTable.tsx
 "use client";
+
 import { useState } from "react";
 import { Search } from "./Search";
 import { Select } from "./Select";
 import { Pagination } from "./Pagination";
 import { ChevronDown, ChevronUp, Search as SearchIcon } from "lucide-react";
 
-interface Column {
-  key: string;
+interface Column<T> {
+  key: keyof T;
   label: string;
   sortable?: boolean;
-  render?: (value: any, row: any) => React.ReactNode;
+  render?: (value: T[keyof T], row: T) => React.ReactNode;
 }
 
-interface DataTableProps {
-  data: any[];
-  columns: Column[];
+interface Action<T> {
+  label: string;
+  icon: React.ReactNode;
+  onClick: (row: T) => void;
+}
+
+interface DataTableProps<T> {
+  data: T[];
+  columns: Column<T>[];
   title?: string;
   searchable?: boolean;
-  actions?: (row: any) => { label: string; icon: React.ReactNode; onClick: () => void }[];
-  onRowClick?: (row: any) => void;
+  actions?: (row: T) => Action<T>[];
+  onRowClick?: (row: T) => void;
 }
 
-export function DataTable({
+export function DataTable<T>({
   data,
   columns,
   title,
   searchable = true,
   actions,
   onRowClick
-}: DataTableProps) {
+}: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+  const [sortConfig, setSortConfig] = useState<{ key: keyof T; direction: 'asc' | 'desc' } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Filter data based on search term
   const filteredData = data.filter(row =>
-    columns.some(column =>
-      String(row[column.key]).toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    columns.some(column => {
+      const value = row[column.key];
+      return String(value).toLowerCase().includes(searchTerm.toLowerCase());
+    })
   );
 
-  // Sort data
+  // Sort data with proper type handling
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortConfig) return 0;
 
     const aValue = a[sortConfig.key];
     const bValue = b[sortConfig.key];
 
-    if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+    // Handle comparison safely
+    if (aValue === null || aValue === undefined) return sortConfig.direction === 'asc' ? -1 : 1;
+    if (bValue === null || bValue === undefined) return sortConfig.direction === 'asc' ? 1 : -1;
+    
+    // Convert to string for safe comparison
+    const aString = String(aValue).toLowerCase();
+    const bString = String(bValue).toLowerCase();
+
+    if (aString < bString) return sortConfig.direction === 'asc' ? -1 : 1;
+    if (aString > bString) return sortConfig.direction === 'asc' ? 1 : -1;
     return 0;
   });
 
@@ -61,7 +77,7 @@ export function DataTable({
     currentPage * itemsPerPage
   );
 
-  const handleSort = (key: string) => {
+  const handleSort = (key: keyof T) => {
     setSortConfig(current =>
       current?.key === key
         ? { key, direction: current.direction === 'asc' ? 'desc' : 'asc' }
@@ -121,7 +137,7 @@ export function DataTable({
             <tr className="bg-gray-50 border-b border-gray-200">
               {columns.map((column) => (
                 <th
-                  key={column.key}
+                  key={column.key as string}
                   className={`px-6 py-4 text-right text-sm font-semibold text-gray-900 ${column.sortable ? 'cursor-pointer hover:bg-gray-100' : ''
                     }`}
                   onClick={() => column.sortable && handleSort(column.key)}
@@ -161,8 +177,11 @@ export function DataTable({
                 onClick={() => onRowClick?.(row)}
               >
                 {columns.map((column) => (
-                  <td key={column.key} className="px-6 py-4 text-sm text-gray-900">
-                    {column.render ? column.render(row[column.key], row) : row[column.key]}
+                  <td key={column.key as string} className="px-6 py-4 text-sm text-gray-900">
+                    {column.render 
+                      ? column.render(row[column.key], row) 
+                      : String(row[column.key])
+                    }
                   </td>
                 ))}
                 {actions && (
@@ -173,7 +192,7 @@ export function DataTable({
                           key={actionIndex}
                           onClick={(e) => {
                             e.stopPropagation();
-                            action.onClick();
+                            action.onClick(row);
                           }}
                           className="p-2 text-gray-600 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
                           title={action.label}

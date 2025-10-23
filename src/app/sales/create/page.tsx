@@ -6,22 +6,22 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { SaleForm } from "../components/SaleForm";
 import { InvoicePreview } from "../components/InvoicePreview";
 import { useRouter } from "next/navigation";
+import { SaleSubmitData, convertToSaleDataType } from "@/types/sales/sales";
 
 export default function CreateSalePage() {
   const router = useRouter();
   const [showInvoice, setShowInvoice] = useState(false);
-  const [saleData, setSaleData] = useState<any>(null);
-  const [formData, setFormData] = useState<any>(null); // اضافه کردن state برای فرم
+  const [saleData, setSaleData] = useState<SaleSubmitData | null>(null);
+  const [formData, setFormData] = useState<SaleSubmitData | null>(null);
 
-  const handleSaleSubmit = (data: any) => {
+  const handleSaleSubmit = (data: SaleSubmitData) => {
     setSaleData(data);
-    setFormData(data); // ذخیره داده‌های فرم
+    setFormData(data);
     setShowInvoice(true);
   };
 
   const handleBackFromPreview = () => {
     setShowInvoice(false);
-    // داده‌های فرم قبلاً در formData ذخیره شده‌اند
   };
 
   return (
@@ -32,16 +32,16 @@ export default function CreateSalePage() {
         description="ثبت فروش جدید محصول"
       />
 
-      {showInvoice ? (
+      {showInvoice && saleData ? (
         <InvoicePreview 
-          saleData={saleData}
+          saleData={convertToSaleDataType(saleData)}
           onBack={handleBackFromPreview}
         />
       ) : (
         <SaleForm 
           onSubmit={handleSaleSubmit}
           onCancel={() => router.back()}
-          initialData={formData} // ارسال داده‌های قبلی به فرم
+          initialData={formData || undefined}
         />
       )}
     </div>
