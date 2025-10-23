@@ -10,8 +10,6 @@ import { ProductSelection } from "./ProductSelection";
 import { CustomerInfo } from "./CustomerInfo";
 import { InvoiceSummary } from "./InvoiceSummary";
 import {
-  Package,
-  User,
   DollarSign
 } from "lucide-react";
 

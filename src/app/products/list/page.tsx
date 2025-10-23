@@ -6,9 +6,10 @@ import { DataTable } from "@/components/ui/DataTable";
 import { Eye, Edit, Trash2, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AddButton } from "@/components/ui/Button";
+import { ProductType } from "@/types/product/product";
 
 // داده‌های نمونه
-const mockProducts = [
+const mockProducts: ProductType[] = [
   {
     id: "1",
     name: "قالین افغانی دست‌باف",
@@ -52,19 +53,19 @@ const mockProducts = [
 
 export default function ProductsPage() {
   const router = useRouter();
-  const [products, setProducts] = useState(mockProducts);
+  const [products, setProducts] = useState<ProductType[]>(mockProducts);
 
-  const handleView = (product: any) => {
+  const handleView = (product: ProductType) => {
     console.log("View product:", product);
     router.push(`/products/${product.id}/details`);
   };
 
-  const handleEdit = (product: any) => {
+  const handleEdit = (product: ProductType) => {
     console.log("Edit product:", product);
     router.push(`/products/${product.id}/edit`);
   };
 
-  const handleDelete = (product: any) => {
+  const handleDelete = (product: ProductType) => {
     if (confirm(`آیا از حذف محصول "${product.name}" مطمئن هستید؟`)) {
       setProducts(prev => prev.filter(p => p.id !== product.id));
       console.log("Delete product:", product);
@@ -80,7 +81,7 @@ export default function ProductsPage() {
       key: "name",
       label: "نام محصول",
       sortable: true,
-      render: (value: string, row: any) => (
+      render: (value: string, row: ProductType) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">ق</span>
@@ -134,14 +135,14 @@ export default function ProductsPage() {
       key: "stock",
       label: "موجودی",
       sortable: true,
-      render: (value: number, row: any) => {
+      render: (value: number, row: ProductType) => {
         const isOutOfStock = value === 0;
         const isLowStock = value > 0 && value < 5;
 
         return (
           <div className="flex flex-col">
             <span className={`font-medium ${isOutOfStock ? "text-red-600" :
-                isLowStock ? "text-amber-600" : "text-green-600"
+              isLowStock ? "text-amber-600" : "text-green-600"
               }`}>
               {value} عدد
             </span>
@@ -176,7 +177,7 @@ export default function ProductsPage() {
     }
   ];
 
-  const actions = (product: any) => [
+  const actions = (product: ProductType) => [
     {
       label: "مشاهده",
       icon: <Eye size={16} />,

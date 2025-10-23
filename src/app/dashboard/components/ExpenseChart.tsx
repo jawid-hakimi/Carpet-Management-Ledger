@@ -8,8 +8,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { ExpenseChartType } from "@/types/dashborad/expenseChart"; // ✅ اضافه شد
 
-const expenseData: { [key: string]: any }[] = [
+const expenseData: ExpenseChartType[] = [
   { month: "حمل", expense: 800 },
   { month: "ثور", expense: 1200 },
   { month: "جوزا", expense: 900 },

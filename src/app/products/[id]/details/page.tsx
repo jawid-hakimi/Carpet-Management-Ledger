@@ -129,7 +129,7 @@ const getConditionLabel = (condition: string) => {
 export default function ProductDetailPage() {
     const params = useParams();
     const router = useRouter();
-    const [product, setProduct] = useState(mockProduct);
+    const [product] = useState(mockProduct);
     const [selectedImage, setSelectedImage] = useState(0);
 
     useEffect(() => {

@@ -1,6 +1,5 @@
 'use client';
 import { Settings, LogOut } from 'lucide-react';
-import clsx from 'clsx';
 
 interface SidebarFooterProps {
   collapsed: boolean;

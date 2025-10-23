@@ -1,37 +1,34 @@
 // src/components/sales/SaleDetails.tsx
 "use client";
 
-import { 
-  User, 
-  Phone, 
-  MapPin, 
-  Package, 
-  DollarSign, 
+import {
+  User,
+  Phone,
+  MapPin,
+  Package,
+  DollarSign,
   Calendar,
   CreditCard,
   Truck,
   FileText
 } from "lucide-react";
+import { SaleDataType } from "@/types/sales/sales";
 
 interface SaleDetailsProps {
-  saleData: any;
+  saleData: SaleDataType | any;
 }
 
 export function SaleDetails({ saleData }: SaleDetailsProps) {
   // اگر saleData ساختار قدیمی دارد، آن را به ساختار جدید تبدیل کنیم
-  const normalizedData = saleData.customer ? saleData : {
+  const normalizedData: SaleDataType = saleData.customer ? saleData : {
     customer: {
       name: saleData.customerName,
       phone: saleData.customerPhone,
       address: saleData.customerAddress
     },
-    product: saleData.products && saleData.products.length > 0 ? {
-      name: saleData.products[0].name,
-      category: "قالین",
-      price: saleData.products[0].salePrice
-    } : { name: "", category: "", price: 0 },
+    products: saleData.products || [],
     saleInfo: {
-      quantity: saleData.products ? saleData.products.reduce((total: number, p: any) => total + p.quantity, 0) : 0,
+      quantity: saleData.products?.reduce((total: number, p: any) => total + p.quantity, 0) || 0,
       totalPrice: saleData.finalPrice || 0,
       discount: 0,
       finalPrice: saleData.finalPrice || 0,
@@ -41,12 +38,11 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
       notes: saleData.notes,
       unitPrice: saleData.products && saleData.products.length > 0 ? saleData.products[0].salePrice : 0
     },
-    invoiceNumber: saleData.invoiceNumber,
-    products: saleData.products || []
+    invoiceNumber: saleData.invoiceNumber
   };
 
-  const InfoCard = ({ title, children, icon: Icon }: { 
-    title: string; 
+  const InfoCard = ({ title, children, icon: Icon }: {
+    title: string;
     children: React.ReactNode;
     icon?: any;
   }) => (
@@ -76,7 +72,7 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
           <User className="ml-2 w-5 h-5" />
           اطلاعات مشتری
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <InfoCard title="نام مشتری" icon={User}>
             <div className="text-lg font-medium">
@@ -104,7 +100,7 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
           <Package className="ml-2 w-5 h-5" />
           اطلاعات محصولات ({normalizedData.products.length} محصول)
         </h3>
-        
+
         <div className="space-y-4">
           {normalizedData.products.map((product: any, index: number) => (
             <div key={product.id || index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -142,7 +138,7 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
           <DollarSign className="ml-2 w-5 h-5" />
           اطلاعات مالی
         </h3>
-        
+
         <div className="grid grid-cols-3 gap-4">
           <InfoCard title="تعداد کل محصولات">
             <div className="text-lg font-bold text-gray-900">
@@ -170,7 +166,7 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
           <FileText className="ml-2 w-5 h-5" />
           اطلاعات تکمیلی
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -207,7 +203,7 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
           <h2 className="text-xl font-bold">بل فروش</h2>
           <p className="text-gray-600">شماره: {normalizedData.invoiceNumber}</p>
         </div>
-        
+
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
             <strong>مشتری:</strong> {normalizedData.customer.name}
@@ -216,7 +212,7 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
             <strong>تلفن:</strong> {normalizedData.customer.phone}
           </div>
         </div>
-        
+
         <table className="w-full border-collapse border border-gray-300 mb-4">
           <thead>
             <tr className="bg-gray-100">
@@ -237,7 +233,7 @@ export function SaleDetails({ saleData }: SaleDetailsProps) {
             ))}
           </tbody>
         </table>
-        
+
         <div className="text-right">
           <p><strong>مبلغ نهایی:</strong> {formatPrice(normalizedData.saleInfo.finalPrice)}</p>
         </div>

@@ -3,7 +3,7 @@
 
 import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
-import { Package, DollarSign, Ruler, Palette, Layers, Hash, Plus, Trash2 } from "lucide-react";
+import { Package, DollarSign, Ruler, Palette, Layers, Hash, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { AddButton } from "@/components/ui/Button";
 
@@ -89,17 +89,17 @@ export function ProductSelection({
   saleProducts,
   onSaleProductsChange
 }: ProductSelectionProps) {
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<typeof mockProducts[number] | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [salePrice, setSalePrice] = useState<number>(0);
 
   const handleProductSelect = (productId: string) => {
-    const product = mockProducts.find(p => p.id === productId);
+    const product = mockProducts.find(p => p.id === productId) || null;
     setSelectedProduct(product);
-    // قیمت فروش را خالی کنید تا کاربر خودش وارد کند
     setSalePrice(0);
     setQuantity(1);
   };
+
 
   const handleQuantityChange = (value: string) => {
     const numValue = parseInt(value) || 0;

@@ -1,5 +1,5 @@
 "use client";
-import { Search, Maximize2 } from "lucide-react";
+import { Maximize2 } from "lucide-react";
 
 export default function Fullscreen() {
   return (

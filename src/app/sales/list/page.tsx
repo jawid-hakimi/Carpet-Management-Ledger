@@ -66,38 +66,6 @@ export default function SalesPage() {
     }
   };
 
-  const handleFilterChange = (newFilters: any) => {
-    setFilters(newFilters);
-    
-    // فیلتر کردن داده‌ها
-    let filtered = mockSales;
-    
-    if (newFilters.customerName) {
-      filtered = filtered.filter(sale => 
-        sale.customerName.includes(newFilters.customerName)
-      );
-    }
-    
-    if (newFilters.dateFrom) {
-      filtered = filtered.filter(sale => 
-        sale.saleDate >= newFilters.dateFrom
-      );
-    }
-    
-    if (newFilters.dateTo) {
-      filtered = filtered.filter(sale => 
-        sale.saleDate <= newFilters.dateTo
-      );
-    }
-    
-    if (newFilters.status) {
-      filtered = filtered.filter(sale => 
-        sale.status === newFilters.status
-      );
-    }
-    
-    setFilteredSales(filtered);
-  };
 
   return (
     <div className="w-full">
