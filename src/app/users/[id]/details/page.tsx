@@ -37,21 +37,7 @@ interface UserData {
   contractFile: string;
 }
 
-const categoryLabels: { [key: string]: string } = {
-  carpet: "فروشگاه قالین",
-  dishes: "فروشگاه ظروف", 
-  clothes: "فروشگاه لباس",
-  electronics: "فروشگاه وسایل برقی",
-  cosmetics: "فروشگاه وسایل آرایشی"
-};
 
-const durationLabels: { [key: string]: string } = {
-  "1m": "فعال برای یک ماه",
-  "2m": "فعال برای دو ماه",
-  "3m": "فعال برای سه ماه", 
-  "6m": "فعال برای شش ماه",
-  "1y": "فعال برای یک سال"
-};
 
 export default function UserDetailsPage() {
   const router = useRouter();

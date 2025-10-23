@@ -1,4 +1,4 @@
-// src/components/sales/SalesList.tsx
+// src/app/sales/components/SalesList.tsx
 "use client";
 
 import { Eye, Edit, Trash2, FileText } from "lucide-react";
@@ -12,7 +12,7 @@ interface Sale {
   quantity: number;
   totalPrice: number;
   saleDate: string;
-  status: string;
+  status: "completed" | "pending" | "cancelled";
   paymentMethod: string;
 }
 
@@ -24,7 +24,7 @@ interface SalesListProps {
 }
 
 export function SalesList({ sales, onViewDetails, onEdit, onDelete }: SalesListProps) {
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: "completed" | "pending" | "cancelled") => {
     const styles = {
       completed: "bg-green-100 text-green-800",
       pending: "bg-yellow-100 text-yellow-800",
@@ -38,53 +38,53 @@ export function SalesList({ sales, onViewDetails, onEdit, onDelete }: SalesListP
     };
 
     return (
-      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${styles[status as keyof typeof styles]}`}>
-        {labels[status as keyof typeof labels]}
+      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${styles[status]}`}>
+        {labels[status]}
       </span>
     );
   };
 
   const columns = [
     {
-      key: "invoiceNumber",
+      key: "invoiceNumber" as const,
       label: "شماره بل",
       sortable: true
     },
     {
-      key: "customerName",
+      key: "customerName" as const,
       label: "مشتری",
       sortable: true
     },
     {
-      key: "productName",
+      key: "productName" as const,
       label: "محصول",
       sortable: true
     },
     {
-      key: "quantity",
+      key: "quantity" as const,
       label: "تعداد",
       sortable: true,
-      render: (value: number) => (
-        <div className="text-center">{value}</div>
+      render: (value: string | number) => (
+        <div className="text-center">{value as number}</div>
       )
     },
     {
-      key: "totalPrice",
+      key: "totalPrice" as const,
       label: "مبلغ",
       sortable: true,
-      render: (value: number) => `${value.toLocaleString()} افغانی`
+      render: (value: string | number) => `${(value as number).toLocaleString()} افغانی`
     },
     {
-      key: "saleDate",
+      key: "saleDate" as const,
       label: "تاریخ",
       sortable: true,
-      render: (value: string) => new Date(value).toLocaleDateString('fa-IR')
+      render: (value: string | number) => new Date(value as string).toLocaleDateString('fa-IR')
     },
     {
-      key: "status",
+      key: "status" as const,
       label: "وضعیت",
       sortable: true,
-      render: (value: string) => getStatusBadge(value)
+      render: (value: string | number) => getStatusBadge(value as "completed" | "pending" | "cancelled")
     }
   ];
 
@@ -117,7 +117,7 @@ export function SalesList({ sales, onViewDetails, onEdit, onDelete }: SalesListP
   }
 
   return (
-    <DataTable
+    <DataTable<Sale>
       data={sales}
       columns={columns}
       title="لیست فروش‌ها"

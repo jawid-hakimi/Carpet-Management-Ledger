@@ -1,6 +1,6 @@
 // src/components/ui/PageHeader.tsx (نسخه ساده‌تر)
 "use client";
-import { ArrowLeft, ArrowRight, Home } from "lucide-react";
+import { ArrowRight, Home } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 
 interface PageHeaderProps {

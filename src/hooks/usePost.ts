@@ -1,24 +1,43 @@
+// src/hooks/usePost.ts
 import { useState } from "react";
 import axios from "axios";
 
-interface PostResponse<T = any> {
+// تعریف generic interfaces
+interface PostResponse<T = unknown> {
   success: boolean;
   data?: T;
   message?: string;
 }
 
-export function usePost(url: string) {
+interface ErrorResponse {
+  message?: string;
+  // می‌توانید فیلدهای دیگر را بر اساس API خود اضافه کنید
+}
+
+interface AxiosError {
+  response?: {
+    data?: ErrorResponse;
+  };
+  message: string;
+}
+
+export function usePost<T = unknown>(url: string) {
   const [loading, setLoading] = useState(false);
 
-  const postData = async <T = any>(data: any): Promise<PostResponse<T>> => {
+  const postData = async <U = T>(data: unknown): Promise<PostResponse<U>> => {
     setLoading(true);
     try {
-      const res = await axios.post<T>(url, data);
+      const res = await axios.post<U>(url, data);
       setLoading(false);
       return { success: true, data: res.data };
-    } catch (err: any) {
+    } catch (error) {
       setLoading(false);
-      return { success: false, message: err?.response?.data?.message || err.message };
+      
+      // Type guard برای بررسی نوع error
+      const err = error as AxiosError;
+      const errorMessage = err?.response?.data?.message || err.message || "خطای ناشناخته رخ داد";
+      
+      return { success: false, message: errorMessage };
     }
   };
 

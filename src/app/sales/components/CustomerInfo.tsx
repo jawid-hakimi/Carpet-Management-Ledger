@@ -6,8 +6,8 @@ import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { User } from "lucide-react";
 import { OutlineButton } from "@/components/ui/Button";
-
-const mockCustomers = [
+import { CustomerType, CustomerInfoProps } from "@/types/customer/customer";
+const mockCustomers: CustomerType[] = [
   { id: "1", name: "احمد حسینی", phone: "0793123456", address: "کابل، کارته سخی، شهرک عبدالرحمن خان" },
   { id: "2", name: "مریم احمدزی", phone: "0700123456", address: "کابل، مکرویان، جاده میوند" },
   { id: "3", name: "رحمان کریمی", phone: "0780987654", address: "کابل، دشت برچی، شهرک طلایی" },
@@ -15,14 +15,10 @@ const mockCustomers = [
   { id: "5", name: "جمیل احمدی", phone: "0744123456", address: "کابل، پل محمود، جاده قندهار" },
 ];
 
-interface CustomerInfoProps {
-  formData: any;
-  onFormDataChange: (field: string, value: any) => void;
-}
-
 export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) {
   const [isNewCustomer, setIsNewCustomer] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerType | null>(null);
+
 
   // همگام‌سازی stateها با formData
   useEffect(() => {
@@ -44,7 +40,7 @@ export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) 
 
   const handleCustomerSelect = (customerId: string) => {
     const customer = mockCustomers.find(c => c.id === customerId);
-    setSelectedCustomer(customer);
+    setSelectedCustomer(customer || null);
 
     if (customer) {
       onFormDataChange('customerId', customer.id);
@@ -62,7 +58,7 @@ export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) 
 
   const handleNewCustomerToggle = (isNew: boolean) => {
     setIsNewCustomer(isNew);
-    
+
     if (isNew) {
       // وقتی به حالت مشتری جدید می‌رویم، customerId را پاک می‌کنیم
       onFormDataChange('customerId', "");
@@ -82,7 +78,7 @@ export function CustomerInfo({ formData, onFormDataChange }: CustomerInfoProps) 
       if (existingCustomer) {
         return existingCustomer.id;
       }
-      
+
       // اگر مشتری در لیست نیست اما داده دارد، یک گزینه موقت ایجاد می‌کنیم
       return formData.customerId;
     }

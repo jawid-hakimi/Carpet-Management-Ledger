@@ -1,7 +1,7 @@
 // src/components/sales/InvoiceSummary.tsx
 "use client";
 
-import { Package, User, DollarSign, Calendar, CreditCard, Truck, Mail } from "lucide-react";
+import {User, Mail } from "lucide-react";
 import { Building2, MapPin, Phone, FileText, CalendarDays } from "lucide-react";
 
 interface SaleProduct {
@@ -30,12 +30,6 @@ interface InvoiceSummaryProps {
     notes: string;
 }
 
-const paymentMethodLabels: { [key: string]: string } = {
-    cash: "نقدی",
-    card: "کارت به کارت",
-    check: "چک",
-    installment: "اقساط"
-};
 
 export function InvoiceSummary({
     saleProducts,
@@ -53,7 +47,6 @@ export function InvoiceSummary({
 
     const tax = subtotal * 0.15; // 15% VAT
     const discount = subtotal * 0.05; // 5% Discount
-    const totalDue = subtotal + tax - discount;
 
     // تابع برای فرمت تاریخ
     const formatDate = (dateString: string) => {

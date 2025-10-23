@@ -2,13 +2,12 @@
 "use client";
 
 import { PrevButton, PrintButton } from "@/components/ui/Button";
-import { Download, FileText, Building2, MapPin, Phone, Mail, User, CalendarDays } from "lucide-react";
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
+import { FileText, Building2, MapPin, Phone, Mail, User, CalendarDays } from "lucide-react";
 import "@/styles/InvoicePrintStyles.css";
+import { SaleDataType, ProductItemType } from "@/types/sales/sales";
 
 interface InvoicePreviewProps {
-  saleData: any;
+  saleData: SaleDataType;
   onBack: () => void;
 }
 
@@ -18,9 +17,9 @@ export function InvoicePreview({ saleData, onBack }: InvoicePreviewProps) {
   };
 
   // محاسبات مالی
-  const subtotal = saleData.products?.reduce((total: number, product: any) => {
+  const subtotal = saleData.products.reduce((total, product) => {
     return total + (product.salePrice * product.quantity);
-  }, 0) || 0;
+  }, 0);
 
   // تابع برای فرمت تاریخ
   const formatDate = (dateString: string) => {
@@ -36,14 +35,10 @@ export function InvoicePreview({ saleData, onBack }: InvoicePreviewProps) {
           پیش‌نمایش بل
         </h2>
         <div className="flex gap-3">
-          <PrevButton
-            onClick={onBack}
-          >
+          <PrevButton onClick={onBack}>
             بازگشت به ویرایش
           </PrevButton>
-          <PrintButton
-            onClick={handlePrint}
-          >
+          <PrintButton onClick={handlePrint}>
             چاپ بل
           </PrintButton>
         </div>
@@ -54,7 +49,12 @@ export function InvoicePreview({ saleData, onBack }: InvoicePreviewProps) {
         {/* هدر بل */}
         <div className="flex justify-between items-start mb-3 border-b border-gray-300 pb-2">
           <div>
-            <img src="/images/logo/carpet-logo.png" alt="لگوی شرکت" className="w-12 h-12 object-contain print:w-10 print:h-10" />
+            {/* استفاده از img برای لوگو - اگر می‌خواهید از Image استفاده کنید باید dimensions مشخص کنید */}
+            <img 
+              src="/images/logo/carpet-logo.png" 
+              alt="لگوی شرکت" 
+              className="w-12 h-12 object-contain print:w-10 print:h-10" 
+            />
             <div className="flex items-center gap-4 bg-teal-50 border border-teal-200 rounded-md px-3 py-1 w-fit shadow-sm print:shadow-none print:bg-teal-50 print:border-teal-200 mt-2">
               <div className="flex items-center gap-1 text-teal-800">
                 <FileText className="w-3 h-3" />
@@ -65,7 +65,9 @@ export function InvoicePreview({ saleData, onBack }: InvoicePreviewProps) {
               <div className="flex items-center gap-1 text-teal-800">
                 <CalendarDays className="w-3 h-3" />
                 <span className="text-xs font-semibold">تاریخ:</span>
-                <span className="text-xs">{formatDate(saleData.saleDate)}</span>
+                <span className="text-xs">
+                  {saleData.saleInfo.saleDate ? formatDate(saleData.saleInfo.saleDate) : "نامشخص"}
+                </span>
               </div>
             </div>
           </div>
@@ -94,19 +96,25 @@ export function InvoicePreview({ saleData, onBack }: InvoicePreviewProps) {
             <div className="flex items-center">
               <User className="w-3 h-3 ml-1 text-teal-700 flex-shrink-0" />
               <span className="font-semibold ml-1 whitespace-nowrap">نام:</span>
-              <span className="mr-1 whitespace-nowrap overflow-hidden text-ellipsis">{saleData.customerName}</span>
+              <span className="mr-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                {saleData.customer.name}
+              </span>
             </div>
 
             <div className="flex items-center">
               <Phone className="w-3 h-3 ml-1 text-teal-700 flex-shrink-0" />
               <span className="font-semibold whitespace-nowrap ml-1">شماره تماس:</span>
-              <span className="mr-1 whitespace-nowrap font-medium">{saleData.customerPhone}</span>
+              <span className="mr-1 whitespace-nowrap font-medium">
+                {saleData.customer.phone}
+              </span>
             </div>
 
             <div className="flex items-center">
               <MapPin className="w-3 h-3 ml-1 text-teal-700 flex-shrink-0" />
               <span className="font-semibold ml-1 whitespace-nowrap">آدرس:</span>
-              <span className="mr-1 overflow-hidden text-ellipsis">{saleData.customerAddress || "کابل، دشت برچی، بلوار طلایی"}</span>
+              <span className="mr-1 overflow-hidden text-ellipsis">
+                {saleData.customer.address || "کابل، دشت برچی، بلوار طلایی"}
+              </span>
             </div>
           </div>
         </div>
@@ -123,7 +131,7 @@ export function InvoicePreview({ saleData, onBack }: InvoicePreviewProps) {
               </tr>
             </thead>
             <tbody>
-              {saleData.products?.map((product: any, index: number) => (
+              {saleData.products.map((product, index) => (
                 <tr key={product.id} className={index % 2 === 0 ? 'bg-gray-50 print:bg-gray-100' : ''}>
                   <td className="py-2 px-2 text-right border border-gray-300">
                     <div>
@@ -157,7 +165,7 @@ export function InvoicePreview({ saleData, onBack }: InvoicePreviewProps) {
             <h4 className="font-bold text-gray-800">یادداشت:</h4>
             <p className="text-gray-600 text-xs leading-relaxed">بل بدون مهر و امضاء معتبر نمی‌باشد.</p>
             <p className="text-gray-600 text-xs leading-relaxed">
-              {saleData.notes || "قالین‌های فروخته شده با کیفیت درجه یک و گارانتی دو ساله می‌باشد. در صورت وجود هرگونه مشکل در مدت گارانتی، قالین تعویض خواهد شد."}
+              {saleData.saleInfo.notes || "قالین‌های فروخته شده با کیفیت درجه یک و گارانتی دو ساله می‌باشد. در صورت وجود هرگونه مشکل در مدت گارانتی، قالین تعویض خواهد شد."}
             </p>
           </div>
 
@@ -195,10 +203,10 @@ export function InvoicePreview({ saleData, onBack }: InvoicePreviewProps) {
             <div className="flex-1 text-right">
               <p className="text-xs font-bold text-gray-800 mb-1">معلومات پرداخت:</p>
               <div className="text-xs text-gray-600 space-y-1">
-                <p>پرداخت: {saleData.paymentMethod === 'cash' ? 'نقدی' :
-                  saleData.paymentMethod === 'card' ? 'کارت به کارت' :
-                    saleData.paymentMethod === 'check' ? 'چک' : 'اقساط'}</p>
-                <p>تحویل: {saleData.deliveryMethod === 'pickup' ? 'در فروشگاه' : 'ارسال به آدرس'}</p>
+                <p>پرداخت: {saleData.saleInfo.paymentMethod === 'cash' ? 'نقدی' :
+                  saleData.saleInfo.paymentMethod === 'card' ? 'کارت به کارت' :
+                    saleData.saleInfo.paymentMethod === 'check' ? 'چک' : 'اقساط'}</p>
+                <p>تحویل: {saleData.saleInfo.deliveryMethod === 'pickup' ? 'در فروشگاه' : 'ارسال به آدرس'}</p>
               </div>
             </div>
 

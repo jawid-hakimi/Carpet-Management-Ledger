@@ -6,9 +6,10 @@ import { DataTable } from "@/components/ui/DataTable";
 import { Eye, Edit, Trash2, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AddButton } from "@/components/ui/Button";
+import { ProductType } from "@/types/product/product";
 
 // داده‌های نمونه
-const mockProducts = [
+const mockProducts: ProductType[] = [
   {
     id: "1",
     name: "قالین افغانی دست‌باف",
@@ -52,19 +53,19 @@ const mockProducts = [
 
 export default function ProductsPage() {
   const router = useRouter();
-  const [products, setProducts] = useState(mockProducts);
+  const [products, setProducts] = useState<ProductType[]>(mockProducts);
 
-  const handleView = (product: any) => {
+  const handleView = (product: ProductType) => {
     console.log("View product:", product);
     router.push(`/products/${product.id}/details`);
   };
 
-  const handleEdit = (product: any) => {
+  const handleEdit = (product: ProductType) => {
     console.log("Edit product:", product);
     router.push(`/products/${product.id}/edit`);
   };
 
-  const handleDelete = (product: any) => {
+  const handleDelete = (product: ProductType) => {
     if (confirm(`آیا از حذف محصول "${product.name}" مطمئن هستید؟`)) {
       setProducts(prev => prev.filter(p => p.id !== product.id));
       console.log("Delete product:", product);
@@ -77,26 +78,26 @@ export default function ProductsPage() {
 
   const columns = [
     {
-      key: "name",
+      key: "name" as const,
       label: "نام محصول",
       sortable: true,
-      render: (value: string, row: any) => (
+      render: (value: string | number, row: ProductType) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">ق</span>
           </div>
           <div>
-            <div className="font-medium text-gray-900">{value}</div>
+            <div className="font-medium text-gray-900">{value as string}</div>
             <div className="text-xs text-gray-500">کد: {row.code}</div>
           </div>
         </div>
       )
     },
     {
-      key: "type",
+      key: "type" as const,
       label: "نوع",
       sortable: true,
-      render: (value: string) => {
+      render: (value: string | number) => {
         const typeConfig = {
           handmade: { color: "bg-blue-100 text-blue-800", label: "دست‌باف" },
           machine: { color: "bg-green-100 text-green-800", label: "ماشینی" },
@@ -104,7 +105,7 @@ export default function ProductsPage() {
           gabbeh: { color: "bg-amber-100 text-amber-800", label: "گبه" }
         };
 
-        const config = typeConfig[value as keyof typeof typeConfig];
+        const config = typeConfig[value as keyof typeof typeConfig] || { color: "bg-gray-100 text-gray-800", label: value as string };
         return (
           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${config.color}`}>
             {config.label}
@@ -113,37 +114,38 @@ export default function ProductsPage() {
       }
     },
     {
-      key: "size",
+      key: "size" as const,
       label: "سایز",
       sortable: true,
-      render: (value: string) => (
-        <span className="font-medium">{value} متر</span>
+      render: (value: string | number) => (
+        <span className="font-medium">{value as string} متر</span>
       )
     },
     {
-      key: "purchasePrice",
+      key: "purchasePrice" as const,
       label: "قیمت خرید",
       sortable: true,
-      render: (value: number) => (
+      render: (value: string | number) => (
         <span className="font-medium text-gray-900">
-          {value.toLocaleString()} افغانی
+          {(value as number).toLocaleString()} افغانی
         </span>
       )
     },
     {
-      key: "stock",
+      key: "stock" as const,
       label: "موجودی",
       sortable: true,
-      render: (value: number, row: any) => {
-        const isOutOfStock = value === 0;
-        const isLowStock = value > 0 && value < 5;
+      render: (value: string | number, row: ProductType) => {
+        const numericValue = value as number;
+        const isOutOfStock = numericValue === 0;
+        const isLowStock = numericValue > 0 && numericValue < 5;
 
         return (
           <div className="flex flex-col">
             <span className={`font-medium ${isOutOfStock ? "text-red-600" :
-                isLowStock ? "text-amber-600" : "text-green-600"
+              isLowStock ? "text-amber-600" : "text-green-600"
               }`}>
-              {value} عدد
+              {numericValue} عدد
             </span>
             {isLowStock && (
               <span className="text-xs text-amber-500">موجودی کم</span>
@@ -156,17 +158,17 @@ export default function ProductsPage() {
       }
     },
     {
-      key: "status",
+      key: "status" as const,
       label: "وضعیت",
       sortable: true,
-      render: (value: string) => {
+      render: (value: string | number) => {
         const statusConfig = {
           available: { color: "bg-green-100 text-green-800", label: "موجود" },
           out_of_stock: { color: "bg-red-100 text-red-800", label: "ناموجود" },
           discontinued: { color: "bg-gray-100 text-gray-800", label: "متوقف شده" }
         };
 
-        const config = statusConfig[value as keyof typeof statusConfig];
+        const config = statusConfig[value as keyof typeof statusConfig] || { color: "bg-gray-100 text-gray-800", label: value as string };
         return (
           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${config.color}`}>
             {config.label}
@@ -176,7 +178,7 @@ export default function ProductsPage() {
     }
   ];
 
-  const actions = (product: any) => [
+  const actions = (product: ProductType) => [
     {
       label: "مشاهده",
       icon: <Eye size={16} />,
@@ -208,12 +210,11 @@ export default function ProductsPage() {
           size="md"
           onClick={handleAddProduct}
         >
-
           افزودن محصول جدید
         </AddButton>
       </div>
 
-      <DataTable
+      <DataTable<ProductType>
         data={products}
         columns={columns}
         title="لیست محصولات"

@@ -8,27 +8,18 @@ import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import {
   Button,
-  FilterButton,
   DownloadButton,
   ViewButton,
   PrintButton
 } from "@/components/ui/Button";
 import {
   BarChart3,
-  TrendingUp,
-  Users,
   Package,
   DollarSign,
   Calendar,
-  Download,
   Filter,
-  RefreshCw,
-  ShoppingCart,
-  LineChart,
   Receipt,
-  Store,
   Archive,
-  Tag,
   Eye,
   Activity,
   ArrowUpRight,
@@ -126,7 +117,7 @@ export default function ReportsPage() {
     title: string;
     value: string;
     subtitle?: string;
-    icon: any;
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     trend?: number;
     color?: "blue" | "green" | "purple" | "orange";
   }) => {
@@ -168,7 +159,7 @@ export default function ReportsPage() {
   const SectionCard = ({ title, children, icon: Icon, action }: {
     title: string;
     children: React.ReactNode;
-    icon: any;
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     action?: React.ReactNode;
   }) => (
     <Card className="p-6 border-0 bg-white shadow-sm hover:shadow-md transition-shadow duration-300">

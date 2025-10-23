@@ -7,9 +7,10 @@ import { SaleDetails } from "@/app/sales/components/SaleDetails";
 import { SaleActions } from "@/app/sales/components/SaleActions";
 import { InvoicePreview } from "@/app/sales/components/InvoicePreview";
 import { useParams, useRouter } from "next/navigation";
+import { SaleDataType, ProductItemType, convertToSaleDataType, SaleSubmitData } from "@/types/sales/sales";
 
 // داده نمونه منطبق با ساختار واقعی
-const mockSaleDetails = {
+const mockSaleDetails: SaleSubmitData = {
   id: "1",
   invoiceNumber: "INV-001",
   customerName: "احمد محمدی",
@@ -20,6 +21,7 @@ const mockSaleDetails = {
   deliveryMethod: "تحویل در فروشگاه",
   notes: "قالین با کیفیت عالی و رنگ‌بندی سنتی",
   finalPrice: 25000000,
+  customerId: "cust-1",
   products: [
     {
       id: "1",
@@ -57,7 +59,7 @@ export default function SaleDetailsPage() {
   const router = useRouter();
   const saleId = params.id as string;
   
-  const [saleData, setSaleData] = useState<any>(null);
+  const [saleData, setSaleData] = useState<SaleSubmitData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -129,6 +131,9 @@ export default function SaleDetailsPage() {
     );
   }
 
+  // تبدیل SaleSubmitData به SaleDataType برای کامپوننت‌ها
+  const saleDataForDisplay = convertToSaleDataType(saleData);
+
   return (
     <div className="w-full">
       <PageHeader
@@ -147,13 +152,13 @@ export default function SaleDetailsPage() {
         
         {/* نمایش جزئیات فروش در حالت عادی */}
         <div className="no-print">
-          <SaleDetails saleData={saleData} />
+          <SaleDetails saleData={saleDataForDisplay} />
         </div>
 
         {/* نمایش InvoicePreview فقط در حالت چاپ */}
         <div className="hidden print:block">
           <InvoicePreview 
-            saleData={saleData}
+            saleData={saleDataForDisplay}
             onBack={() => {}} // تابع خالی چون در حالت چاپ نیازی نیست
           />
         </div>
