@@ -2,16 +2,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  Bell, 
-  Check, 
-  Trash2, 
-  Info, 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
-  Package, 
-  ShoppingBag, 
+import {
+  Bell,
+  Check,
+  Trash2,
+  Info,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Package,
+  ShoppingBag,
   Tag,
   Filter,
   AlertCircle
@@ -110,10 +110,10 @@ const NotificationsPage: React.FC = () => {
   const filteredNotifications = notifications.filter(notification => {
     const typeMatch = filter === 'all' || notification.type === filter;
     const priorityMatch = priorityFilter === 'all' || notification.priority === priorityFilter;
-    const readMatch = readFilter === 'all' || 
-                     (readFilter === 'read' && notification.read) || 
-                     (readFilter === 'unread' && !notification.read);
-    
+    const readMatch = readFilter === 'all' ||
+      (readFilter === 'read' && notification.read) ||
+      (readFilter === 'unread' && !notification.read);
+
     return typeMatch && priorityMatch && readMatch;
   });
 
@@ -143,7 +143,7 @@ const NotificationsPage: React.FC = () => {
   // دریافت آیکن بر اساس نوع اعلان
   const getNotificationIcon = (type: NotificationType) => {
     const iconClass = "w-6 h-6";
-    
+
     switch (type) {
       case 'info':
         return <Info className={iconClass} />;
@@ -237,9 +237,9 @@ const NotificationsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 ">
       <div className="max-w-6xl mx-auto">
-        
+
         {/* هدر صفحه با کامپوننت PageHeader */}
-        <PageHeader 
+        <PageHeader
           title="اعلان‌ها"
           description={`مدیریت و مشاهده تمام اطلاعیه‌های سیستم • ${unreadCount} اعلان خوانده نشده`}
           showBackButton={true}
@@ -266,7 +266,7 @@ const NotificationsPage: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex flex-col sm:flex-row gap-3">
               <PrimaryButton
                 icon={<Check className="w-5 h-5" />}
@@ -288,13 +288,13 @@ const NotificationsPage: React.FC = () => {
               <Filter className="w-5 h-5 text-gray-500" />
               <h3 className="text-lg font-semibold text-gray-800">فیلترها</h3>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1 max-w-2xl z-20">
               {/* فیلتر وضعیت خواندن */}
               <Select
                 options={readStatusOptions}
                 value={readFilter}
-                onChange={(value) => setReadFilter(value as any)}
+                onChange={(value) => setReadFilter(value as 'all' | 'read' | 'unread')}
                 placeholder="وضعیت"
                 size="md"
               />
@@ -312,7 +312,7 @@ const NotificationsPage: React.FC = () => {
               <Select
                 options={priorityOptions}
                 value={priorityFilter}
-                onChange={(value) => setPriorityFilter(value as any)}
+                onChange={(value) => setPriorityFilter(value as 'all' | 'high' | 'medium' | 'low')}
                 placeholder="اولویت"
                 size="md"
               />
@@ -336,11 +336,10 @@ const NotificationsPage: React.FC = () => {
             filteredNotifications.map((notification) => (
               <div
                 key={notification.id}
-                className={`group bg-white rounded-lg shadow-xs border-2 transition-all duration-300 hover:shadow-md ${
-                  notification.read 
-                    ? 'border-gray-200/60 opacity-90' 
-                    : 'border-blue-200 bg-blue-50/50'
-                }`}
+                className={`group bg-white rounded-lg shadow-xs border-2 transition-all duration-300 hover:shadow-md ${notification.read
+                  ? 'border-gray-200/60 opacity-90'
+                  : 'border-blue-200 bg-blue-50/50'
+                  }`}
               >
                 <div className="p-6">
                   <div className="flex gap-4">
@@ -353,9 +352,8 @@ const NotificationsPage: React.FC = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3 mb-3">
                         <div className="flex items-center gap-3 flex-wrap">
-                          <h3 className={`text-lg font-semibold ${
-                            notification.read ? 'text-gray-700' : 'text-gray-900'
-                          }`}>
+                          <h3 className={`text-lg font-semibold ${notification.read ? 'text-gray-700' : 'text-gray-900'
+                            }`}>
                             {notification.title}
                           </h3>
                           <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getPriorityBadge(notification.priority)}`}>
