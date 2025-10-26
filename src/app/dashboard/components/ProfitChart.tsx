@@ -23,7 +23,7 @@ const profitData = [
 
 export default function ProfitChart() {
   return (
-    <Card className="p-4">
+    <Card className="p-4 border-gray-200/60 shadow-none">
       <h1 className="text-lg font-semibold text-teal-500 mb-4">
          مفاد شش ماه اخیر
       </h1>

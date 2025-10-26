@@ -46,12 +46,12 @@ export default function CompaniesPage() {
 
   const handleView = (company: Company) => {
     console.log("View company:", company);
-    router.push(`/companies/${company.id}/details`);
+    router.push(`/users/${company.id}/details`);
   };
 
   const handleEdit = (company: Company) => {
     console.log("Edit company:", company);
-    router.push(`/companies/${company.id}/edit`);
+    router.push(`/users/${company.id}/edit`);
   };
 
   const handleDelete = (company: Company) => {

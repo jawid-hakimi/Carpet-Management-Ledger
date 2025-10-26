@@ -24,7 +24,7 @@ const salesData = [
 
 export default function SalesChart() {
   return (
-    <Card className="p-6">
+    <Card className="p-6 border-gray-200/60 shadow-none">
       {/* Title */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-teal-600">فروشات روزانه</h2>

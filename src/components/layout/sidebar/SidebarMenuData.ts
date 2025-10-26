@@ -6,7 +6,8 @@ import {
   FileText,
   PlusCircle,
   List,
-  UserPlus
+  UserPlus,
+  Bell
 } from 'lucide-react';
 
 export const sidebarMenu = [
@@ -38,6 +39,11 @@ export const sidebarMenu = [
       { title: 'افزودن کاربر جدید', icon: UserPlus, link: '/users/add' },
       { title: 'لیست کاربران', icon: List, link: '/users/list' },
     ],
+  },
+  {
+    title: 'اعلانات',
+    icon: Bell,
+    link: '/notifications',
   },
   {
     title: 'گزارشات',
