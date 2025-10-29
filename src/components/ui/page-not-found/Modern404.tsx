@@ -101,7 +101,7 @@ const AdminNotFoundPage = () => {
           <div className="bg-white rounded-lg border border-gray-300 flex flex-col p-4 md:p-8">
             <h3 className="font-semibold text-gray-800 mb-6 text-lg text-center">دسترسی سریع به بخش‌های مدیریت</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {quickLinks.slice(0, 6).map((link, index) => {
+              {quickLinks.slice(0, 10).map((link, index) => {
                 const IconComponent = link.icon;
                 return (
                   <Link
@@ -137,7 +137,8 @@ const AdminNotFoundPage = () => {
                     </li>
                     <li className="flex items-center gap-2">
                       <div className="w-1.5 h-1.5 bg-amber-600 rounded-full"></div>
-                      <span>از منوی کناری استفاده نمایید</span>
+                      <span className='hidden md:block'>از منوی کنار صفحه استفاده نمایید</span>
+                      <span className='md:hidden'>از منوی پایین صفحه استفاده نمایید</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <div className="w-1.5 h-1.5 bg-amber-600 rounded-full"></div>
