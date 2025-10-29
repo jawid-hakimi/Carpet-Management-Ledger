@@ -7,7 +7,10 @@ import {
   PlusCircle,
   List,
   UserPlus,
-  Bell
+  Bell,
+  FilePlus,
+  ReceiptText,
+  Wallet,
 } from 'lucide-react';
 
 export const sidebarMenu = [
@@ -30,6 +33,14 @@ export const sidebarMenu = [
     submenu: [
       { title: 'فروش مورد جدید', icon: PlusCircle, link: '/sales/create' },
       { title: 'لیست فروشات', icon: List, link: '/sales/list' },
+    ],
+  },
+  {
+    title: 'مصارف',
+    icon: Wallet,
+    submenu: [
+      { title: 'ثبت مصرف', icon: FilePlus, link: '/consumption/create' },
+      { title: 'لیست مصارف', icon: ReceiptText, link: '/consumption/list' },
     ],
   },
   {
